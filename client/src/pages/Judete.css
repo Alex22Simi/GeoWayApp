@@ -1,0 +1,11 @@
+.joc {
+  fill: none;
+  stroke: rgb(88, 60, 10);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.joc:hover {
+  stroke: red;
+  stroke-width: 10;
+}

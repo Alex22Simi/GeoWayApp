@@ -1,0 +1,38 @@
+# Node.js
+node_modules/
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+build/
+
+# React
+*.log
+*.cache
+*.env
+.cache/
+coverage/
+.DS_Store
+public/static/
+*.local
+
+# IDEs and OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+*.tmp
+Thumbs.db
+*.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Testing
+jest-html-reporters-*.html
+test-results/
+*.zip

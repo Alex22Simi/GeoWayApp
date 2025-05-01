@@ -1,0 +1,147 @@
+body {
+  all: unset;
+  font-family: Arial, sans-serif;
+  background-color: #e0f7fa;
+  min-height: 100vh;
+}
+
+#hero {
+  height: 65vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #e0f7fa;
+}
+
+#options {
+  height: 15vh;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0 10%;
+  background-color: #e0f7fa;
+}
+
+.buton-optiuni {
+  width: 100%;
+  height: 50%;
+  border-radius: 1rem;
+  background-color: #00bcd4;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.buton-optiuni:hover {
+  background-color: #0097a7;
+  transform: translateY(-3px);
+}
+
+#contact {
+  height: 10vh;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 2rem;
+  background-color: #e0f7fa;
+}
+
+.container {
+}
+
+.nume-aplicatie {
+  font-size: 3rem;
+  margin: 0 auto;
+  width: fit-content;
+  color: #00796b;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mesaj-aplicatie {
+  font-size: 2rem;
+  margin: 3rem auto 0 auto;
+  width: fit-content;
+  color: #00796b;
+}
+
+.logo {
+  width: 15rem;
+  margin: 0 auto;
+  display: block;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.text-profil {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+#despre-mine {
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.sectiune-despre {
+  text-align: center;
+}
+
+.text-despre {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #2c3e50;
+  text-align: left;
+}
+
+.text-despre h2 {
+  font-size: 2rem;
+  color: #00796b;
+  margin-bottom: 1.5rem;
+}
+
+.text-despre a {
+  color: #00bcd4;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.text-despre a:hover {
+  text-decoration: underline;
+}
+
+.urare {
+  font-size: 1.2rem;
+  color: #00796b;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid #00bcd4;
+}
+
+.despre-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.despre-poza {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.text-despre {
+  flex: 1;
+  font-size: 1.1rem;
+  color: #2c3e50;
+  text-align: left;
+}

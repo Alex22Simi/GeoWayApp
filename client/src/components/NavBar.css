@@ -1,0 +1,119 @@
+body {
+  all: unset;
+  font-family: Arial, sans-serif;
+  background-color: #e0f7fa;
+  min-height: 100vh;
+}
+
+#navbar {
+  height: 10vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  gap: 1rem;
+  background-color: #e0f7fa;
+}
+
+.navbar-img {
+  width: 3rem;
+  cursor: pointer;
+}
+
+.meniu,
+.setari {
+  position: fixed;
+  top: 0;
+  width: 20%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 4rem 1rem 1rem 1rem;
+  background-color: rgba(78, 195, 245, 0.95);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  overflow-y: scroll;
+}
+
+.meniu {
+  left: -300px;
+}
+
+.setari {
+  right: -300px;
+}
+
+.meniu.deschis {
+  left: 0;
+}
+
+.setari.deschis {
+  right: 0;
+}
+
+.ascuns {
+  display: none;
+}
+
+.buton-meniu:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.buton-inchidere {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.icon-inchidere {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-inchidere:hover {
+  opacity: 0.8;
+}
+
+.buton-meniu {
+  color: white;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin: 0 6px;
+  transition: background-color 0.3s ease;
+  border: none;
+}
+
+.meniu-schimbari {
+  position: fixed;
+  z-index: 100;
+  background-color: rgba(35, 35, 35, 0.6);
+  width: 100%;
+  height: 100vh;
+}
+
+.meniu-main {
+  width: 50vw;
+  height: 50vh;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: aliceblue;
+  padding: 4px;
+  border-radius: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+}

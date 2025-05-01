@@ -1,0 +1,682 @@
+const express = require("express");
+const app = express();
+const cors = require("cors");
+const dotenv = require("dotenv");
+const fs = require("fs");
+const path = require("path");
+dotenv.config();
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+const Joi = require("joi");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+
+const { db } = require("./db/dbConnect.js");
+const User = require("./db/Models/User.js");
+const Examen = require("./db/Models/Examen.js");
+const an2024 = require("./storage/2024.js");
+const an2023 = require("./storage/2023.js");
+const { verificareToken } = require("./middlewares.js");
+const Mesaj = require("./db/Models/Mesaj.js");
+
+const emailSchema = Joi.string().email().max(30).required().messages({
+  "string.email": "Introdu o adresă de email validă!",
+  "string.empty": "Adresa de email este obligatorie!",
+  "any.requied": "Adresa de email este obligatorie!",
+});
+
+const passwordSchema = Joi.string()
+  .pattern(/^[a-zA-Z0-9!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/~`-]*$/)
+  .max(20)
+  .required()
+  .messages({
+    "string.pattern.base":
+      "Parola trebuie să conțină doar litere, cifre și caractere speciale, fara spații.",
+    "any.requires": "Parola este obligatorie!",
+  });
+
+// RESTful
+// verb + resursa URI
+// GET /examene/2024/bac ->resursa
+// POST /examen {}
+// GET - select
+// POST - insert
+// PUT - update total
+// PATCH - update pe bucati
+// DELETE - delete/drop
+app.use(cors());
+
+app.use(express.json());
+
+app.get("/hello", verificareToken, (req, res) => {
+  return res.status(200).json("Hello!");
+});
+
+app.post("/hello", verificareToken, (req, res) => {
+  // console.log(req.verificat);
+  return res.status(200).json("Hello!");
+});
+
+app.get("/useri", async (req, res) => {
+  const useri = await User.find();
+  return res.status(200).json(useri);
+});
+
+app.get("/examen/:an/:tip", async (req, res) => {
+  try {
+    const an = req.params.an;
+    const tip = req.params.tip;
+    if (!an || !tip) {
+      return res.status(400).json("Lipsesc parametrii!");
+    }
+
+    const examen = await Examen.findOne({
+      an: an,
+      "subiecte.tip": tip,
+    }).select("-_id -an");
+    const subiect = examen.subiecte[0];
+    return res.status(200).json(subiect);
+  } catch (error) {
+    return res.status(500).json([]);
+  }
+});
+
+app.get("/examene", verificareToken, async (req, res) => {
+  try {
+    const examene = await Examen.find(
+      {},
+      {
+        an: 1,
+        "subiecte.nume": 1,
+        "subiecte.tip": 1,
+        _id: 0,
+      }
+    );
+    return res.status(200).json(examene);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json("Eroare de server!");
+  }
+});
+
+app.get("/imagine/:fileName", async (req, res) => {
+  try {
+    const fileName = req.params.fileName;
+    if (!fileName) {
+      return res.status(400).json("Lipseste parametrul de nume fișier!");
+    }
+    const edited = fileName.replace("|", "/");
+    const caleFisier = path.join(__dirname, "img", edited);
+    try {
+      const fisier = fs.readFileSync(caleFisier);
+      res.setHeader("Content-Type", "image/png");
+      res.send(fisier);
+    } catch (error) {
+      return res.status(404).json("Fișierul nu există");
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json("Eroare de server.");
+  }
+});
+
+app.post("/signup", async (req, res) => {
+  try {
+    const { nume, email, parola, parolaConfirm, elev } = req.body;
+    // console.log(req.body);
+    if (!nume || nume.length == 0) {
+      // console.log(nume);
+      return res.status(400).json({ mesaj: "Lipsește parametrul nume!" });
+    }
+    const { error: eroareMail } = emailSchema.validate(email);
+    if (eroareMail) {
+      return res.status(400).json({ mesaj: eroareMail.details[0].message });
+    }
+    if (!parola) {
+      return res.status(400).json({ mesaj: "Lipsește parametrul parola!" });
+    }
+    if (parola !== parolaConfirm) {
+      return res.status(400).json({ mesaj: "Parolele nu se potrivesc!" });
+    }
+    const { error: eroareParola } = passwordSchema.validate(parola);
+    if (eroareParola) {
+      return res.status(400).json({ mesaj: eroareParola.details[0].message });
+    }
+    if (elev == undefined || elev == null) {
+      return res.status(400).json({ mesaj: "Lipsește parametrul elev!" });
+    }
+
+    const user = await User.findOne({ email });
+    if (user) {
+      return res
+        .status(400)
+        .json({ mesaj: "Există deja un cont cu această adresă de email!" });
+    }
+
+    const salt = await bcrypt.genSalt(2);
+    const pass_hash = await bcrypt.hash(parola, salt);
+    const userInserat = new User({ email, pass_hash, nume, elev }).save();
+    if (!userInserat) {
+      return res.status(500).json({ mesaj: "Contul nu a putut fi creat" });
+    }
+
+    jwt.sign(
+      { sub: email, elev },
+      JWT_SECRET_KEY,
+      { expiresIn: "30d" },
+      (err, token) => {
+        if (err) {
+          return res.status(500).json({ mesaj: "Contul nu a putut fi creat!" });
+        }
+
+        return res.status(200).json({
+          mesaj: "Cont creat cu succes!",
+          jwt: token,
+          userData: { elev },
+        });
+      }
+    );
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Contul nu a putut fi creat!" });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, parola } = req.body;
+    const { error: eroareMail } = emailSchema.validate(email);
+    if (eroareMail) {
+      return res.status(400).json({ mesaj: eroareMail.details[0].message });
+    }
+    const { error: eroareParola } = passwordSchema.validate(parola);
+    if (eroareParola) {
+      return res.status(400).json({ mesaj: eroareParola.details[0].message });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ mesaj: "Nu există un cont cu această adresă de email!" });
+    }
+    const parolaCorecta = await bcrypt.compare(parola, user.pass_hash);
+    if (!parolaCorecta) {
+      return res.status(500).json({ mesaj: "Parola incorecta!" });
+    }
+
+    jwt.sign(
+      { sub: email, elev: user.elev },
+      JWT_SECRET_KEY,
+      { expiresIn: "30d" },
+      (err, token) => {
+        if (err) {
+          return res.status(500).json({ mesaj: "Contul nu a putut fi creat!" });
+        }
+
+        return res.status(200).json({
+          mesaj: "Autentificat cu succes!",
+          jwt: token,
+          userData: { elev: user.elev },
+        });
+      }
+    );
+  } catch (error) {
+    return res.status(500).json({ mesaj: "Contul nu a putut fi creat" });
+  }
+});
+
+app.put("/descriere", verificareToken, async (req, res) => {
+  try {
+    const { sub: email, elev } = req.verificat;
+    if (elev) {
+      return res
+        .status(400)
+        .json({ mesaj: "Un elev nu poate sa-si schimbe descrierea" });
+    }
+    const { descriere } = req.body;
+    // console.log(req.body);
+    if (!descriere || descriere.length == 0) {
+      // console.log(nume);
+      return res.status(400).json({ mesaj: "Lipsește parametrul descriere!" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ mesaj: "Utilizator inexistent" });
+    }
+    user.descriere = descriere;
+    await user.save();
+
+    return res.status(200).json({ mesaj: "Descriere schimbata cu succes!" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Contul nu a putut fi creat!" });
+  }
+});
+
+app.get("/descriere", verificareToken, async (req, res) => {
+  try {
+    const { sub: email, elev } = req.verificat;
+    if (elev) {
+      return res
+        .status(400)
+        .json({ mesaj: "Un elev nu poate sa-si vada descrierea" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ mesaj: "Utilizator inexistent" });
+    }
+
+    return res.status(200).json({ descriere: user.descriere });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in preluarea descrierii" });
+  }
+});
+
+app.get("/mentori", verificareToken, async (req, res) => {
+  try {
+    const mentori = await User.find(
+      { elev: false },
+      { nume: 1, descriere: 1, email: 1, _id: 0 }
+    );
+    if (!mentori) {
+      return res.status(400).json({ mesaj: "Nu exista mentori" });
+    }
+    const mentoriPlusStatus = await Promise.all(
+      mentori.map(async (mentor) => {
+        const mesaje = await Mesaj.find({
+          status: "in asteptare",
+          pentru: mentor.email,
+        });
+        const mentorObj = mentor.toObject();
+        if (mesaje?.length != 0) {
+          mentorObj.status = "in asteptare";
+        }
+        return mentorObj;
+      })
+    );
+
+    return res.status(200).json({ mentori: mentoriPlusStatus });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in preluarea descrierii" });
+  }
+});
+
+app.post("/mesaj", verificareToken, async (req, res) => {
+  try {
+    const { sub: email } = req.verificat;
+    const { titlu, cerere, data, pentru } = req.body;
+
+    if (!titlu || !cerere || !data) {
+      return res
+        .status(400)
+        .json({ mesaj: "Va rugam completati toate campurile" });
+    }
+
+    const mesajInserat = new Mesaj({
+      deLa: email,
+      pentru,
+      titlu,
+      cerere,
+      data,
+      status: "in asteptare",
+    }).save();
+    if (!mesajInserat) {
+      return res.status(500).json({ mesaj: "Mesajul nu a putut fi trimis" });
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: EMAIL_AUTH,
+        pass: EMAIL_PASS,
+      },
+    });
+
+    const info = await transporter.sendMail({
+      from: EMAIL_AUTH,
+      to: pentru,
+      subject: "Noua cerere",
+      html: `
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Resetare parolă</title>
+  <style>
+    body {
+      background-color: #e0f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 0;
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      color: #00796b;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      color: #004d40;
+    }
+    p {
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    .code {
+      display: inline-block;
+      background-color: #00bcd4;
+      color: white;
+      font-size: 22px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Salutare de la GeoWay! 🌍</h1>
+    <p>Codul de resetare a parolei pentru contul tău este:</p>
+    <div class="code">${titlu} pentru data ${data}</div>
+    <div class="code">${cerere}</div>
+    de la ${email}
+    <p>Dacă nu ai solicitat acest cod, poți ignora acest mesaj.</p>
+    <div class="footer">
+      Acest mesaj a fost generat automat. Te rugăm să nu răspunzi.
+    </div>
+  </div>
+</body>
+</html>
+`,
+    });
+
+    return res.status(200).json({ mesaj: "Mesajul a fost trimis" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Mesajul nu a putut fi trimis" });
+  }
+});
+
+app.post("/barem/:an/:tip", async (req, res) => {
+  try {
+    //fiecare obiect de raspuns are {id, type, val}
+    const { raspunsuri } = req.body;
+    const an = req.params.an;
+    const tip = req.params.tip;
+    if (!an || !tip) {
+      return res.status(400).json("Lipsesc parametrii!");
+    }
+
+    const examen = await Examen.findOne({
+      an: an,
+      "subiecte.tip": tip,
+    }).select("-_id -an");
+    const subiectExamen = examen.subiecte?.[0];
+    if (!subiectExamen) {
+      return res.status(400).json("Examenul nu exista!");
+    }
+    // console.log(subiectExamen);
+    let punctaj = 10;
+    raspunsuri.forEach((raspuns) => {
+      //tip, subietc, litera, intrebare
+      const { id, type, val } = raspuns;
+      if (!val) {
+        return;
+      }
+      // console.log(id, type, val);
+      const [tipIntrebare, indexSubiect, idxLitera, idxIntrebare] =
+        id.split("~");
+      // console.log(
+      //   `Sub ${
+      //     +indexSubiect + 1
+      //   }, litera ${idxLitera}, intreb ${idxIntrebare} de tip ${tipIntrebare} a fost rapsunsa cu ${val}`
+      // );
+      const subiect = subiectExamen.puncte[indexSubiect];
+      const litera = JSON.parse(JSON.stringify(subiect.subpuncte))[0][
+        idxLitera
+      ];
+      const intrebare = litera.intrebari[idxIntrebare - 1];
+      // console.log(intrebare);
+      if (tipIntrebare == "completare") {
+        if (intrebare.raspunsuri.includes(val)) {
+          punctaj += intrebare.punctaj;
+        }
+      }
+      if (tipIntrebare == "alegere") {
+        if (intrebare.raspunsuri.includes(val)) {
+          punctaj += intrebare.punctaj;
+        }
+      }
+      if (tipIntrebare == "alegere-speciala") {
+        if (intrebare.raspunsuri.includes(val)) {
+          // console.log("corect");
+          punctaj += intrebare.punctaj;
+        }
+      }
+    });
+
+    console.log(`Utilizatorul a obținut ${punctaj} puncte`);
+
+    return res.status(200).json({ punctaj });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json("Eroare de server!");
+  }
+});
+
+const EMAIL_PASS = process.env.EMAIL_PASS;
+const EMAIL_AUTH = process.env.EMAIL_AUTH;
+
+app.post("/send-reset-code", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json("Lipseste parametrul de email!");
+    }
+    const { error: eroareMail } = emailSchema.validate(email);
+    if (eroareMail) {
+      return res.status(400).json({ mesaj: eroareMail.details[0].message });
+    }
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: EMAIL_AUTH,
+        pass: EMAIL_PASS,
+      },
+    });
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ mesaj: "Utilizatorul cu aceasta adresa de email nu exista!" });
+    }
+    const resetCode = Math.floor(100_000 + Math.random() * 900_000); //cod random de 6 cifre
+    user.codResetare = {
+      cod: resetCode,
+      exp: new Date(Date.now() + 10 * 60_000),
+    };
+    await user.save();
+
+    const info = await transporter.sendMail({
+      from: EMAIL_AUTH,
+      to: email,
+      subject: "Cod resetare parola",
+      html: `
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Resetare parolă</title>
+  <style>
+    body {
+      background-color: #e0f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 0;
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      color: #00796b;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      color: #004d40;
+    }
+    p {
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    .code {
+      display: inline-block;
+      background-color: #00bcd4;
+      color: white;
+      font-size: 22px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Salutare de la GeoWay! 🌍</h1>
+    <p>Codul de resetare a parolei pentru contul tău este:</p>
+    <div class="code">${resetCode}</div>
+    <p>Dacă nu ai solicitat acest cod, poți ignora acest mesaj.</p>
+    <div class="footer">
+      Acest mesaj a fost generat automat. Te rugăm să nu răspunzi.
+    </div>
+  </div>
+</body>
+</html>
+`,
+    });
+    return res.status(200).json({ mesaj: "Codul de resetare a fost trimis!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ mesaj: "Eroare de server." });
+  }
+});
+
+app.post("/only-verify-reset-code", async (req, res) => {
+  try {
+    const { email, resetCode } = req.body;
+    if (!email) {
+      return res.status(400).json("Lipseste parametrul de email!");
+    }
+    const { error: eroareMail } = emailSchema.validate(email);
+    if (eroareMail) {
+      return res.status(400).json({ mesaj: eroareMail.details[0].message });
+    }
+    if (!resetCode) {
+      return res.status(400).json("Lipseste parametrul cod de resetare!");
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ mesaj: "Utilizatorul cu aceasta adresa de email nu exista!" });
+    }
+    if (resetCode != user.codResetare.cod) {
+      return res
+        .status(400)
+        .json({ mesaj: "Codul de resetare nu este corect!" });
+    }
+    if (user.codResetare.exp < new Date()) {
+      return res.status(400).json({ mesaj: "Codul de resetare este expirat!" });
+    }
+
+    return res.status(200).json({ mesaj: "Codul este corect!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ mesaj: "Eroare de server." });
+  }
+});
+
+app.post("/verify-reset-code", async (req, res) => {
+  try {
+    const { email, resetCode, parola, parolaConfirm } = req.body;
+    if (!email) {
+      return res.status(400).json("Lipseste parametrul de email!");
+    }
+    const { error: eroareMail } = emailSchema.validate(email);
+    if (eroareMail) {
+      return res.status(400).json({ mesaj: eroareMail.details[0].message });
+    }
+    if (!resetCode) {
+      return res.status(400).json("Lipseste parametrul cod de resetare!");
+    }
+    if (!parola || !parolaConfirm) {
+      return res.status(400).json("Lipseste parametrul parola!");
+    }
+    const { error: eroareParola } = passwordSchema.validate(parola);
+    if (eroareParola) {
+      return res.status(400).json({ mesaj: eroareParola.details[0].message });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ mesaj: "Utilizatorul cu aceasta adresa de email nu exista!" });
+    }
+    if (resetCode != user.codResetare.cod) {
+      return res
+        .status(400)
+        .json({ mesaj: "Codul de resetare nu este corect!" });
+    }
+    if (user.codResetare.exp < new Date()) {
+      return res.status(400).json({ mesaj: "Codul de resetare este expirat!" });
+    }
+    const salt = await bcrypt.genSalt(2);
+    const pass_hash = await bcrypt.hash(parola, salt);
+    user.pass_hash = pass_hash;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ mesaj: "Parola a fost schimbata cu succes!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ mesaj: "Eroare de server." });
+  }
+});
+
+app.listen(8080, () => {
+  const examen2024 = new Examen(an2024);
+  // const examen2023 = new Examen(an2023);
+  // examen2024.save();
+  //examen2023.save();
+
+  console.log("Server pornit pe portul 8080!");
+});

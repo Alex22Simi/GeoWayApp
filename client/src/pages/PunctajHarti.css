@@ -1,0 +1,40 @@
+/* .joc-rauri {
+  fill: none;
+  stroke: rgb(57, 78, 212);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.joc-rauri:hover {
+  stroke: red;
+  stroke-width: 5;
+} */
+
+.containerHarta {
+  width: 50%;
+  margin: 10vh auto 0 auto;
+}
+
+.containerInfo {
+  margin: 5vh auto 0 auto;
+  width: fit-content;
+}
+
+.buton {
+  padding: 1rem;
+  border-radius: 15%;
+  background-color: rgb(12, 37, 37);
+  color: white;
+  cursor: pointer;
+}
+
+.container-butoane {
+  display: flex;
+  width: 40%;
+  gap: 1rem;
+}
+
+.mesaj-final {
+  width: 50%;
+  margin: 10vh auto 0 auto;
+}
