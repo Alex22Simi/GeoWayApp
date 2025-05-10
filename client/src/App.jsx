@@ -18,6 +18,7 @@ import Lectie from "./pages/Lectii/Lectie";
 import Capitol from "./pages/Lectii/Capitol";
 import Quizz from "./pages/Lectii/Quizz";
 import Mentor from "./pages/Mentor";
+import CereriElevi from "./pages/CereriElevi";
 
 function App() {
   const [examene, setExamene] = useState([]);
@@ -89,9 +90,17 @@ function App() {
           <Route path="/lectie/:idCapitol/:idxLectie" element={<Lectie />} />
           <Route path="/capitol/:idCapitol" element={<Capitol />} />
           <Route path="/quizz/:idCapitol" element={<Quizz />} />
+
+          {/* Pentru elevi */}
           <Route
             path="/mentor"
             element={<Mentor afisareNotificare={afisareNotificare} />}
+          />
+
+          {/* Pentru mentori */}
+          <Route
+            path="/elevi"
+            element={<CereriElevi afisareNotificare={afisareNotificare} />}
           />
 
           {/* Ruta pentru login */}

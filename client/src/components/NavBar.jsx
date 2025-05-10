@@ -29,8 +29,8 @@ const TIPURI_MENIU = {
 const NavBar = ({ afisareNotificare }) => {
   const handleMeniu = async (tip) => {
     setTipMeniu(tip);
-    if (tip == TIPURI_MENIU.DESCRIERE) {
-      try {
+    try {
+      if (tip == TIPURI_MENIU.DESCRIERE) {
         const response = await fetch(`${URL_API}/descriere`, {
           method: "GET",
           headers: {
@@ -44,9 +44,24 @@ const NavBar = ({ afisareNotificare }) => {
         } else {
           setDescriere("");
         }
-      } catch (error) {
-        console.error(error);
       }
+      if (tip == TIPURI_MENIU.NUME) {
+        const response = await fetch(`${URL_API}/nume`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            jwt: localStorage.getItem("jwt"),
+          },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setNume(data?.nume || "");
+        } else {
+          setNume("");
+        }
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -74,8 +89,33 @@ const NavBar = ({ afisareNotificare }) => {
     }
   };
 
+  const handleUpdateNume = async () => {
+    try {
+      const response = await fetch(`${URL_API}/nume`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          jwt: localStorage.getItem("jwt"),
+        },
+        body: JSON.stringify({ nume }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        afisareNotificare("Numele a fost schimbat cu succes!", "succes");
+      } else {
+        afisareNotificare("Eroare in schimbarea numelui!", "eroare");
+      }
+    } catch (error) {
+      console.error(error);
+      afisareNotificare("Eroare in schimbarea numelui!", "eroare");
+    } finally {
+      setTipMeniu(TIPURI_MENIU.NONE);
+    }
+  };
+
   const [userData, setUserData] = useState("userData");
   const [descriere, setDescriere] = useState("");
+  const [nume, setNume] = useState("");
   const [tipMeniu, setTipMeniu] = useState(TIPURI_MENIU.NONE);
   useEffect(() => {
     const userDataLs = localStorage.getItem("userData");
@@ -138,6 +178,18 @@ const NavBar = ({ afisareNotificare }) => {
                 </button>
               </>
             )}
+
+            {tipMeniu == TIPURI_MENIU.NUME && (
+              <>
+                <label>Nume nou : </label>
+                <input
+                  type="text"
+                  value={nume}
+                  onChange={(e) => setNume(e.target.value)}
+                />
+                <button onClick={handleUpdateNume}>Acutalizeaza numele</button>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -192,10 +244,21 @@ const NavBar = ({ afisareNotificare }) => {
         <div className="buton-meniu" onClick={() => navigate("/examene")}>
           Examene anterioare
         </div>
-        <div className="buton-meniu" onClick={() => navigate("/mentor")}>
+        <div
+          className="buton-meniu"
+          onClick={() =>
+            navigate(
+              userData.elev != undefined
+                ? userData.elev === true
+                  ? "/mentor"
+                  : "/elevi"
+                : "/mentor"
+            )
+          }
+        >
           Chat cu{" "}
           {userData.elev != undefined
-            ? userData.elev === false
+            ? userData.elev === true
               ? "mentorul"
               : "elevii"
             : "mentorul"}
@@ -215,7 +278,12 @@ const NavBar = ({ afisareNotificare }) => {
         >
           <img src={cancelSvg} alt="Închide" className="icon-inchidere" />
         </button>
-        <button className="buton-meniu">Actualizare nume</button>
+        <button
+          className="buton-meniu"
+          onClick={() => handleMeniu(TIPURI_MENIU.NUME)}
+        >
+          Actualizare nume
+        </button>
         <button className="buton-meniu">Actualizare poză profil</button>
         <button className="buton-meniu">Schimbare parolă</button>
         {userData.elev}

@@ -4,6 +4,7 @@ import profileImg from "../assets/profile.jpg";
 import instaSvg from "../assets/insta.svg";
 import gmailSvg from "../assets/gmail.svg";
 import logoSvg from "../assets/logo.svg";
+import logo from "../../public/favicon.ico";
 
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -15,8 +16,7 @@ function Home({ afisareNotificare }) {
       <NavBar afisareNotificare={afisareNotificare} />
       {/* Secțiunea Hero */}
       <div id="hero" className="container">
-        <div className="nume-aplicatie">GeoWay</div>
-        <img src={logoSvg} className="logo" alt="Logo" />
+        <img src={logo} className="logo" alt="Logo" />
         <div className="mesaj-aplicatie">Bine ați venit!</div>
       </div>
 
@@ -57,12 +57,12 @@ function Home({ afisareNotificare }) {
               </p>
               <p>
                 Dacă ai întrebări sau nelămuriri despre o anumită lecție, nu
-                ezita să scrii, fie pe{" "}
-                <a href="mailto:geoway2025@gmail.com">E-mail</a>,{" "}
+                ezita să scrii pe{" "}
+                <a href="mailto:geoway2025@gmail.com">E-mail</a> sau{" "}
                 <a href="https://www.instagram.com/geowayplatform/">
                   Instagram
-                </a>{" "}
-                sau direct în secțiunea de <strong>chat cu mentorul</strong>.
+                </a>
+                .
               </p>
               <p className="urare">Mult succes! 🚀</p>
             </div>

@@ -1,0 +1,197 @@
+.cerere-card {
+  background-color: #00bcd4;
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  width: 240px;
+  min-height: 200px;
+  text-align: center;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 188, 212, 0.3);
+  word-break: break-word;
+}
+
+.raspunde-button {
+  background-color: #ffffff;
+  color: #00bcd4;
+  border: 2px solid #00bcd4;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.raspunde-button:hover {
+  background-color: #b2ebf2;
+  color: #007c91;
+  transform: scale(1.05);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #00acc1;
+  text-align: center;
+  animation: glow 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes glow {
+  0% {
+    color: #00bcd4;
+    text-shadow: 0 0 5px #00acc1;
+  }
+  100% {
+    color: #0097a7;
+    text-shadow: 0 0 10px #00acc1;
+  }
+}
+
+.form-label {
+  font-weight: 600;
+  color: #007c91;
+  font-size: 15px;
+  margin-bottom: 6px;
+  text-align: left;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #b2ebf2;
+  font-size: 15px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease;
+  outline: none;
+  width: 100%;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  border-color: #00bcd4;
+  box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
+}
+
+.form-select option[value="acceptata"] {
+  color: #00796b;
+  background-color: #e0f7fa;
+  font-weight: 600;
+}
+
+.form-select option[value="refuzata"] {
+  color: #c62828;
+  background-color: #ffebee;
+  font-weight: 600;
+}
+
+.form-select.acceptata {
+  background-color: #e0f7fa;
+  color: #00796b;
+  border: 1px solid #00796b;
+}
+
+.form-select.refuzata {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #c62828;
+}
+
+button.back-button {
+  margin-top: 20px;
+  align-self: center;
+}
+
+.message-form-container {
+  background-color: #ffffff;
+  padding: 30px 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 188, 212, 0.2);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.message-form-container h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #00bcd4;
+  margin-bottom: 10px;
+}
+
+.message-form-container label {
+  align-self: flex-start;
+  font-weight: 600;
+  color: #007c91;
+}
+
+.message-form-container input,
+.message-form-container textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #b2ebf2;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+.message-form-container input:focus,
+.message-form-container textarea:focus {
+  border-color: #00acc1;
+  outline: none;
+}
+
+.message-form-container button {
+  background-color: #00bcd4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.message-form-container button:hover {
+  background-color: #0097a7;
+  transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.select-success {
+  background-color: #e0f7fa; /* albastru-verzui deschis */
+  border: 2px solid #00796b;
+  color: #00796b;
+}
+
+.select-danger {
+  background-color: #ffebee; /* roz deschis */
+  border: 2px solid #c62828;
+  color: #c62828;
+}

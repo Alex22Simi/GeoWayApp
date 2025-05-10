@@ -20,24 +20,56 @@ body {
   cursor: pointer;
 }
 
-.meniu,
 .setari {
   position: fixed;
   top: 0;
-  width: 20%;
+  right: -300px;
+  width: 260px;
   height: 100%;
+  padding: 2rem 1rem;
+  background-color: rgba(0, 188, 212, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+  border-left: 2px solid rgba(255, 255, 255, 0.15);
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 4rem 1rem 1rem 1rem;
-  background-color: rgba(78, 195, 245, 0.95);
-  transition: transform 0.3s ease;
   z-index: 1000;
-  overflow-y: scroll;
+  transition: right 0.3s ease;
+  overflow-y: auto;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
 }
 
 .meniu {
+  position: fixed;
+  top: 0;
   left: -300px;
+  width: 260px;
+  height: 100%;
+  padding: 2rem 1rem;
+  background: rgba(0, 188, 212, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+  border-right: 2px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 1000;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.meniu {
+  background-color: rgba(0, 188, 212, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 
 .setari {
@@ -81,17 +113,25 @@ body {
 }
 
 .buton-meniu {
+  all: unset;
   color: white;
   height: 50px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, #00bcd4, #0097a7);
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 0.5rem;
+  border-radius: 10px;
   cursor: pointer;
   margin: 0 6px;
-  transition: background-color 0.3s ease;
   border: none;
+  font-weight: 500;
+  box-shadow: 0 4px 10px rgba(0, 121, 107, 0.2);
+}
+
+.buton-meniu:hover {
+  transform: scale(1.05);
+  background: #00acc1;
+  box-shadow: 0 6px 12px rgba(0, 121, 107, 0.3);
 }
 
 .meniu-schimbari {
@@ -103,17 +143,87 @@ body {
 }
 
 .meniu-main {
-  width: 50vw;
-  height: 50vh;
+  width: 90%;
+  max-width: 480px;
+  background-color: #ffffff;
+  padding: 30px 20px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrare pe orizontală */
+  justify-content: center;
+  gap: 16px;
+  box-shadow: 0 8px 24px rgba(0, 188, 212, 0.3);
   position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: aliceblue;
-  padding: 4px;
-  border-radius: 2rem;
+}
+
+.profil-meniu {
   display: flex;
-  flex-direction: column;
-  justify-items: center;
   align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 1rem;
+}
+
+.user-icon {
+  background: linear-gradient(135deg, #4dd0e1, #0097a7);
+  padding: 10px;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 121, 107, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.text-profil {
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 1px 1px #006064;
+}
+
+.meniu-main label {
+  font-weight: 600;
+  color: #007c91;
+  font-size: 16px;
+  text-align: center;
+  width: 100%;
+}
+.meniu-main input[type="text"] {
+  padding: 10px;
+  border: 1px solid #00bcd4;
+  border-radius: 10px;
+  font-size: 14px;
+  width: 100%;
+  max-width: 300px;
+  outline: none;
+  text-align: center;
+}
+
+.meniu-main input[type="text"]:focus {
+  border-color: #007c91;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+}
+.meniu-main button {
+  all: unset;
+  background-color: #00bcd4;
+  color: white;
+  text-align: center;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 188, 212, 0.3);
+  font-size: 14px;
+  width: fit-content;
+}
+
+.meniu-main button:hover {
+  background-color: #0097a7;
+  transform: scale(1.03);
 }

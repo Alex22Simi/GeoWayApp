@@ -1,8 +1,7 @@
 .examene-container {
   text-align: center;
   padding: 20px;
-  background-color: #e0f7fa;
-  /* min-height: 100vh; */
+  background-color: #e0fafd;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -20,11 +19,11 @@
 
 @keyframes glow {
   0% {
-    color: #00838f;
+    color: #00bcd4;
     text-shadow: 0 0 5px #00acc1;
   }
   100% {
-    color: #004d40;
+    color: #0097a7;
     text-shadow: 0 0 10px #00acc1;
   }
 }
@@ -37,26 +36,40 @@
   width: 90%;
 }
 
-.exam-card {
-  background-color: #00838f;
+.exam-card,
+.cerere-card {
+  background-color: #00bcd4;
   color: white;
-  padding: 15px;
-  border-radius: 10px;
+  padding: 20px;
+  border-radius: 12px;
   cursor: pointer;
-  width: 180px;
-  height: 150px;
+  width: 240px;
+  min-height: 200px;
   text-align: center;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 188, 212, 0.3);
+  word-break: break-word;
 }
 
-.exam-card:hover {
-  background-color: #006064;
+.exam-card h2,
+.exam-card h3,
+.cerere-card h2,
+.cerere-card h3 {
+  margin: 6px 0;
+  font-size: 16px;
+}
+
+.exam-card:hover,
+.cerere-card:hover {
+  background-color: #0097a7;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 188, 212, 0.4);
 }
 
 .exam-dropdown {
@@ -65,7 +78,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #00838f;
+  background-color: #00bcd4;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -81,31 +94,233 @@
 
 .exam-dropdown button {
   background-color: #ffffff;
-  color: #00838f;
+  color: #00bcd4;
   border: none;
   padding: 8px;
   width: 80%;
   cursor: pointer;
   border-radius: 5px;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, color 0.2s;
+  font-weight: 500;
 }
 
 .exam-dropdown button:hover {
   background-color: #b2ebf2;
+  color: #007c91;
 }
 
 .back-button {
   padding: 10px 20px;
-  background-color: #00796b;
+  background-color: #00bcd4;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s, transform 0.2s;
   margin-top: 30px;
   align-self: center;
+  font-weight: 600;
 }
 
 .back-button:hover {
-  background-color: #004d40;
+  background-color: #0097a7;
+  transform: scale(1.05);
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.badge-success {
+  background-color: #e0f7fa;
+  color: #00796b;
+  border: 1px solid #00796b;
+}
+
+.badge-success::before {
+  content: "✔";
+  font-weight: bold;
+}
+
+.badge-rejected {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #c62828;
+}
+
+.badge-rejected::before {
+  content: "✖";
+  font-weight: bold;
+}
+
+.badge-pending {
+  background-color: #fffde7;
+  color: #fbc02d;
+  border: 1px solid #fbc02d;
+}
+
+.badge-pending::before {
+  content: "⏳";
+  font-weight: bold;
+}
+
+.solicita-button {
+  background-color: #ffffff;
+  color: #00bcd4;
+  border: 2px solid #00bcd4;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.solicita-button:hover {
+  background-color: #b2ebf2;
+  color: #007c91;
+  transform: scale(1.05);
+}
+
+.mentor-nume {
+  font-size: 25px !important;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: white;
+}
+
+.mentorat-form-wrapper {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 188, 212, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 320px;
+  margin-top: 40px;
+}
+
+.mentorat-form-wrapper h2 {
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #007c91;
+}
+
+.mentorat-form-wrapper label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #0097a7;
+  align-self: flex-start;
+}
+
+.mentorat-form-wrapper input,
+.mentorat-form-wrapper textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  border: 1px solid #b2ebf2;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #f0fefe;
+  resize: vertical;
+}
+
+.mentorat-form-wrapper input[type="date"] {
+  padding: 8px 10px;
+}
+
+.mentorat-form-wrapper button {
+  padding: 10px 20px;
+  background-color: #00bcd4;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mentorat-form-wrapper button:hover {
+  background-color: #0097a7;
+  transform: scale(1.03);
+}
+
+.message-form-container {
+  background-color: #ffffff;
+  padding: 30px 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 188, 212, 0.2);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.message-form-container h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #00bcd4;
+  margin-bottom: 10px;
+}
+
+.message-form-container label {
+  align-self: flex-start;
+  font-weight: 600;
+  color: #007c91;
+}
+
+.message-form-container input,
+.message-form-container textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #b2ebf2;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+.message-form-container input:focus,
+.message-form-container textarea:focus {
+  border-color: #00acc1;
+  outline: none;
+}
+
+.message-form-container button {
+  background-color: #00bcd4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.message-form-container button:hover {
+  background-color: #0097a7;
+  transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

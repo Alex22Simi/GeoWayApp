@@ -18,8 +18,9 @@ const an2024 = require("./storage/2024.js");
 const an2023 = require("./storage/2023.js");
 const { verificareToken } = require("./middlewares.js");
 const Mesaj = require("./db/Models/Mesaj.js");
+const { default: mongoose } = require("mongoose");
 
-const emailSchema = Joi.string().email().max(30).required().messages({
+const emailSchema = Joi.string().email().max(50).required().messages({
   "string.email": "Introdu o adresă de email validă!",
   "string.empty": "Adresa de email este obligatorie!",
   "any.requied": "Adresa de email este obligatorie!",
@@ -161,7 +162,7 @@ app.post("/signup", async (req, res) => {
     }
 
     jwt.sign(
-      { sub: email, elev },
+      { sub: email, elev, nume },
       JWT_SECRET_KEY,
       { expiresIn: "30d" },
       (err, token) => {
@@ -205,8 +206,9 @@ app.post("/login", async (req, res) => {
       return res.status(500).json({ mesaj: "Parola incorecta!" });
     }
 
+    // console.log(user.name);
     jwt.sign(
-      { sub: email, elev: user.elev },
+      { sub: email, elev: user.elev, nume: user.nume },
       JWT_SECRET_KEY,
       { expiresIn: "30d" },
       (err, token) => {
@@ -223,6 +225,27 @@ app.post("/login", async (req, res) => {
     );
   } catch (error) {
     return res.status(500).json({ mesaj: "Contul nu a putut fi creat" });
+  }
+});
+
+app.get("/descriere", verificareToken, async (req, res) => {
+  try {
+    const { sub: email, elev } = req.verificat;
+    if (elev) {
+      return res
+        .status(400)
+        .json({ mesaj: "Un elev nu poate sa-si vada descrierea" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ mesaj: "Utilizator inexistent" });
+    }
+
+    return res.status(200).json({ descriere: user.descriere });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in preluarea descrierii" });
   }
 });
 
@@ -255,24 +278,44 @@ app.put("/descriere", verificareToken, async (req, res) => {
   }
 });
 
-app.get("/descriere", verificareToken, async (req, res) => {
+app.put("/nume", verificareToken, async (req, res) => {
   try {
-    const { sub: email, elev } = req.verificat;
-    if (elev) {
-      return res
-        .status(400)
-        .json({ mesaj: "Un elev nu poate sa-si vada descrierea" });
+    const { sub: email } = req.verificat;
+
+    const { nume } = req.body;
+    if (!nume || nume.length == 0) {
+      return res.status(400).json({ mesaj: "Lipsește parametrul nume!" });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ mesaj: "Utilizator inexistent" });
     }
+    user.nume = nume;
+    await user.save();
 
-    return res.status(200).json({ descriere: user.descriere });
+    return res.status(200).json({ mesaj: "Numele schimbata cu succes!" });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ mesaj: "Eroare in preluarea descrierii" });
+    return res
+      .status(500)
+      .json({ mesaj: "Numele nu a putut fi schimbat cu succes!" });
+  }
+});
+
+app.get("/nume", verificareToken, async (req, res) => {
+  try {
+    const { sub: email } = req.verificat;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ mesaj: "Utilizator inexistent" });
+    }
+
+    return res.status(200).json({ nume: user.nume });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in preluarea numelui" });
   }
 });
 
@@ -308,7 +351,8 @@ app.get("/mentori", verificareToken, async (req, res) => {
 
 app.post("/mesaj", verificareToken, async (req, res) => {
   try {
-    const { sub: email } = req.verificat;
+    const { sub: email, nume } = req.verificat;
+    console.log(nume);
     const { titlu, cerere, data, pentru } = req.body;
 
     if (!titlu || !cerere || !data) {
@@ -322,6 +366,7 @@ app.post("/mesaj", verificareToken, async (req, res) => {
       pentru,
       titlu,
       cerere,
+      deLaNume: nume,
       data,
       status: "in asteptare",
     }).save();
@@ -340,13 +385,13 @@ app.post("/mesaj", verificareToken, async (req, res) => {
     const info = await transporter.sendMail({
       from: EMAIL_AUTH,
       to: pentru,
-      subject: "Noua cerere",
+      subject: "Cerere nouă de lecție",
       html: `
 <!DOCTYPE html>
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>Resetare parolă</title>
+  <title>Cerere nouă GeoWay</title>
   <style>
     body {
       background-color: #e0f7fa;
@@ -366,22 +411,18 @@ app.post("/mesaj", verificareToken, async (req, res) => {
     }
     h1 {
       font-size: 24px;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
       color: #004d40;
     }
-    p {
-      font-size: 16px;
-      margin-bottom: 24px;
-    }
-    .code {
-      display: inline-block;
+    .highlight {
       background-color: #00bcd4;
       color: white;
-      font-size: 22px;
+      font-size: 20px;
       padding: 12px 24px;
       border-radius: 8px;
       font-weight: bold;
-      letter-spacing: 2px;
+      display: inline-block;
+      margin: 10px 0;
     }
     .footer {
       margin-top: 30px;
@@ -393,11 +434,10 @@ app.post("/mesaj", verificareToken, async (req, res) => {
 <body>
   <div class="container">
     <h1>Salutare de la GeoWay! 🌍</h1>
-    <p>Codul de resetare a parolei pentru contul tău este:</p>
-    <div class="code">${titlu} pentru data ${data}</div>
-    <div class="code">${cerere}</div>
-    de la ${email}
-    <p>Dacă nu ai solicitat acest cod, poți ignora acest mesaj.</p>
+    <p>Ai primit o cerere de lecție cu titlul:</p>
+    <div class="highlight">${titlu}</div>
+    <p>De la <strong>${nume}</strong></p>
+    <p>Te rugăm să îți verifici secțiunea <a class="link-chat" href="http://localhost:5173/elevi">Chat cu elevii</a> din aplicație pentru a răspunde solicitării.</p>
     <div class="footer">
       Acest mesaj a fost generat automat. Te rugăm să nu răspunzi.
     </div>
@@ -411,6 +451,223 @@ app.post("/mesaj", verificareToken, async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ mesaj: "Mesajul nu a putut fi trimis" });
+  }
+});
+
+app.put("/mesaj", verificareToken, async (req, res) => {
+  try {
+    const { sub: email, nume } = req.verificat;
+    const { titlu, cerere, data, pentru, status, raspunsPentru } = req.body;
+
+    if (!titlu || !cerere || !data) {
+      return res
+        .status(400)
+        .json({ mesaj: "Va rugam completati toate campurile" });
+    }
+
+    const mesajInserat = new Mesaj({
+      deLa: email,
+      pentru,
+      deLaNume: nume,
+      titlu,
+      cerere,
+      data,
+      status,
+      raspunsPentru,
+    }).save();
+    if (!mesajInserat) {
+      return res.status(500).json({ mesaj: "Mesajul nu a putut fi trimis" });
+    }
+
+    if (raspunsPentru) {
+      const mesaj = await Mesaj.findById(raspunsPentru);
+      if (mesaj) {
+        mesaj.status = status;
+        await mesaj.save();
+      }
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: EMAIL_AUTH,
+        pass: EMAIL_PASS,
+      },
+    });
+
+    if (status == "acceptata") {
+      const info = await transporter.sendMail({
+        from: EMAIL_AUTH,
+        to: pentru,
+        subject: "Cerere acceptată",
+        html: `
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Răspuns cerere GeoWay</title>
+  <style>
+    body {
+      background-color: #e0f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 0;
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      color: #00796b;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 24px;
+      color: #004d40;
+    }
+    .highlight {
+      background-color: #00bcd4;
+      color: white;
+      font-size: 20px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      display: inline-block;
+      margin: 10px 0;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Salutare de la GeoWay! 🌍</h1>
+    <p>Ai primit răspuns la solicitarea de lecție cu titlul:</p>
+    <div class="highlight">${titlu}</div>
+    <p>De la <strong>${nume}</strong></p>
+    <p>Te rugăm să îți verifici secțiunea <a class="link-chat" href="http://localhost:5173/mentor">Chat cu mentorii</a> din aplicație pentru a vedea răspunsul.</p>
+    <div class="footer">
+      Acest mesaj a fost generat automat. Te rugăm să nu răspunzi.
+    </div>
+  </div>
+</body>
+</html>
+`,
+      });
+    } else {
+      const info = await transporter.sendMail({
+        from: EMAIL_AUTH,
+        to: pentru,
+        subject: "cerere respinsa",
+        html: `
+        <!DOCTYPE html>
+        <html lang="ro">
+        <head>
+          <meta charset="UTF-8" />
+          <title>Resetare parolă</title>
+          <style>
+            body {
+              background-color: #e0f7fa;
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+              padding: 0;
+              margin: 0;
+            }
+            .container {
+              max-width: 600px;
+              margin: 40px auto;
+              background: #ffffff;
+              padding: 40px;
+              border-radius: 15px;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+              text-align: center;
+              color: #00796b;
+            }
+            h1 {
+              font-size: 24px;
+              margin-bottom: 16px;
+              color: #004d40;
+            }
+            p {
+              font-size: 16px;
+              margin-bottom: 24px;
+            }
+            .code {
+              display: inline-block;
+              background-color: #00bcd4;
+              color: white;
+              font-size: 22px;
+              padding: 12px 24px;
+              border-radius: 8px;
+              font-weight: bold;
+              letter-spacing: 2px;
+            }
+            .footer {
+              margin-top: 30px;
+              font-size: 12px;
+              color: #999;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>Salutare de la GeoWay! 🌍</h1>
+            <p>Codul de resetare a parolei pentru contul tău este:</p>
+            <div class="code">${titlu} pentru data ${data}</div>
+            <div class="code">${cerere}</div>
+            de la ${email}
+            <p>Dacă nu ai solicitat acest cod, poți ignora acest mesaj.</p>
+            <div class="footer">
+              Acest mesaj a fost generat automat. Te rugăm să nu răspunzi.
+            </div>
+          </div>
+        </body>
+        </html>
+        `,
+      });
+    }
+
+    return res.status(200).json({ mesaj: "Mesajul a fost trimis" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Mesajul nu a putut fi trimis" });
+  }
+});
+
+app.get("/mesaje", verificareToken, async (req, res) => {
+  try {
+    const { sub: email } = req.verificat;
+    const mesaje = await Mesaj.find({
+      pentru: email,
+      status: "in asteptare",
+    });
+
+    return res.status(200).json({ success: true, mesaje });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in preluarea mesajelor" });
+  }
+});
+
+app.get("/mesaje/all", verificareToken, async (req, res) => {
+  try {
+    const { sub: email } = req.verificat;
+    const mesaje = await Mesaj.find({
+      pentru: email,
+    }).populate("raspunsPentru", "titlu");
+    // const mesajePrimite = await Mesaj.find({
+    //   pentru: email,
+    // });
+
+    return res.status(200).json({ success: true, mesaje });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in preluarea mesajelor" });
   }
 });
 

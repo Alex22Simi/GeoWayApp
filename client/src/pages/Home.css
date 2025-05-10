@@ -33,11 +33,65 @@ body {
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 188, 212, 0.2);
 }
 
 .buton-optiuni:hover {
   background-color: #0097a7;
-  transform: translateY(-3px);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 6px 15px rgba(0, 188, 212, 0.4);
+}
+#hero,
+#options,
+#despre-mine,
+#contact {
+  animation: fadeIn 0.8s ease-in-out both;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+#despre-mine:hover {
+  transform: scale(1.01);
+  box-shadow: 0 8px 20px rgba(0, 188, 212, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.logo:hover {
+  animation: bounce 0.6s;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .buton-optiuni {
+    width: 90%;
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+  }
+
+  .despre-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .text-despre {
+    text-align: center;
+  }
 }
 
 #contact {
@@ -51,26 +105,34 @@ body {
 .container {
 }
 
-.nume-aplicatie {
-  font-size: 3rem;
-  margin: 0 auto;
-  width: fit-content;
-  color: #00796b;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+.mesaj-aplicatie {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #0097a7;
+  margin-top: 1rem;
+  animation: glowText 2s ease-in-out infinite alternate;
+  text-shadow: 0 0 3px #00acc1; /* mai puțin intens */
 }
 
-.mesaj-aplicatie {
-  font-size: 2rem;
-  margin: 3rem auto 0 auto;
-  width: fit-content;
-  color: #00796b;
+@keyframes glowText {
+  from {
+    text-shadow: 0 0 3px #00acc1, 0 0 5px #00acc1;
+  }
+  to {
+    text-shadow: 0 0 8px #00bcd4, 0 0 10px #0097a7;
+  }
 }
 
 .logo {
-  width: 15rem;
-  margin: 0 auto;
+  width: 18rem;
+  margin-bottom: 3rem; /* în loc de 2rem – crește spațiul față de text */
+  margin-top: -1rem; /* ridică ușor imaginea */
   display: block;
   filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.logo:hover {
+  transform: scale(1.05);
 }
 
 .text-profil {
@@ -102,7 +164,7 @@ body {
 
 .text-despre h2 {
   font-size: 2rem;
-  color: #00796b;
+  color: #00bcd4;
   margin-bottom: 1.5rem;
 }
 
@@ -118,7 +180,7 @@ body {
 
 .urare {
   font-size: 1.2rem;
-  color: #00796b;
+  color: #00bcd4;
   font-weight: 600;
   margin-top: 1.5rem;
   padding-top: 1rem;
@@ -144,4 +206,20 @@ body {
   font-size: 1.1rem;
   color: #2c3e50;
   text-align: left;
+}
+
+.progress-bar {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  height: 12px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.progress-bar-inner {
+  background: #00bcd4;
+  width: 65%;
+  height: 100%;
+  border-radius: 10px;
 }

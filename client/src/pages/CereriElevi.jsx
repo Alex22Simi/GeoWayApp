@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
+import "./CereriElevi.css";
 
-import "./Mentor.css";
-
-const Mentor = ({ afisareNotificare }) => {
+const CerereriElevi = ({ afisareNotificare }) => {
   const navigate = useNavigate();
   const [mesajEroare, setMesajEroare] = useState("");
   const [meniuLectie, setMeniuLectie] = useState(false);
@@ -13,10 +12,13 @@ const Mentor = ({ afisareNotificare }) => {
   const [data, setData] = useState("");
   const [mentorAles, setMentorAles] = useState(null);
   const [mesaje, setMesaje] = useState([]);
+  const [statusCerere, setStatusCerere] = useState("acceptata");
+  const raspunsPentru = useRef("");
+  const dataLectie = useRef("");
 
   const getMesaje = async () => {
     try {
-      const resultat = await fetch("http://localhost:8080/mesaje/all", {
+      const resultat = await fetch("http://localhost:8080/mesaje", {
         method: "GET",
         headers: {
           jwt: localStorage.getItem("jwt"),
@@ -36,39 +38,21 @@ const Mentor = ({ afisareNotificare }) => {
     }
   };
 
-  const getMentori = async () => {
-    try {
-      const resultat = await fetch("http://localhost:8080/mentori", {
-        method: "GET",
-        headers: {
-          jwt: localStorage.getItem("jwt"),
-        },
-      });
-      if (resultat.ok) {
-        const date = await resultat.json();
-        setMentori(date?.mentori || []);
-        return;
-      }
-
-      setMesajEroare("Nu s-au putut prelua mentorii");
-    } catch (error) {
-      setMesajEroare("Nu s-au putut prelua mentorii");
-    }
-  };
-
   const trimiteMesaj = async () => {
     try {
       const resultat = await fetch("http://localhost:8080/mesaj", {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           jwt: localStorage.getItem("jwt"),
         },
         body: JSON.stringify({
-          pentru: mentorAles.email,
+          pentru: elevAles,
           titlu,
           cerere,
           data,
+          status: statusCerere,
+          raspunsPentru: raspunsPentru.current,
         }),
       });
       const date = await resultat.json();
@@ -76,15 +60,12 @@ const Mentor = ({ afisareNotificare }) => {
         afisareNotificare(date.mesaj, "succes");
         setTitlu("");
         setCerere("");
-        setMentori((prev) => {
-          let newMentori = [...prev];
-          newMentori = newMentori.map((mentor) => {
-            if (mentor.email == mentorAles.email) {
-              mentor.status = "in asteptare";
-            }
-            return mentor;
-          });
-          return newMentori;
+        setMesaje((prev) => {
+          let newMesaje = [...prev];
+          newMesaje = newMesaje.filter(
+            (mesaj) => mesaj._id !== raspunsPentru.current
+          );
+          return newMesaje;
         });
         setMeniuLectie(false);
         return;
@@ -99,14 +80,18 @@ const Mentor = ({ afisareNotificare }) => {
 
   //DOM content loaded
   useEffect(() => {
-    getMentori();
     getMesaje();
   }, []);
 
   const [mentori, setMentori] = useState([]);
+  const [elevAles, setElevAles] = useState("");
+  const [numeElev, setNumeElev] = useState("");
 
-  const handleSolicitaLectie = (mentor) => {
-    setMentorAles(mentor);
+  const handleSolicitaLectie = (deLa, idMesaj, dataLec, numeElevAles) => {
+    setElevAles(deLa);
+    raspunsPentru.current = idMesaj;
+    setData(dataLec);
+    setNumeElev(numeElevAles);
     setMeniuLectie(true);
   };
 
@@ -119,53 +104,34 @@ const Mentor = ({ afisareNotificare }) => {
       <NavBar afisareNotificare={afisareNotificare} />
       {!meniuLectie && (
         <div className="examene-container">
-          <h2 className="title">Mentori</h2>
+          <h2 className="title">Mesaje de la elevi</h2>
           {mesajEroare && <div>{mesajEroare}</div>}
-          <div className="examene-list">
-            {mentori?.map((mentor, indexMentor) => (
-              <div key={indexMentor} className="exam-card">
-                <h2 className="mentor-nume">{mentor?.nume}</h2>
-                <h3>{mentor?.descriere}</h3>
-                {mentor?.status != "in asteptare" ? (
-                  <button
-                    className="solicita-button"
-                    onClick={() => handleSolicitaLectie(mentor)}
-                  >
-                    Solicită lecție
-                  </button>
-                ) : (
-                  <span className="status-badge badge-pending">
-                    Cerere în așteptare
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <h2 className="title">Mesaje trimise & primite</h2>
           <div className="examene-list">
             {mesaje?.map((mesaj, indexMesaj) => (
               <div key={indexMesaj} className="cerere-card">
-                <h2>{mesaj?.raspunsPentru?.titlu}</h2>
+                <h2>{mesaj?.titlu}</h2>
                 <h2>{mesaj?.data}</h2>
-
                 <h3>{mesaj?.cerere}</h3>
-                <h3>De la : {mesaj?.deLaNume}</h3>
-                <span
-                  className={`status-badge ${
-                    mesaj.status === "acceptata"
-                      ? "badge-success"
-                      : mesaj.status === "in asteptare"
-                      ? "badge-pending"
-                      : "badge-rejected"
-                  }`}
+
+                <button
+                  className="raspunde-button"
+                  onClick={() =>
+                    handleSolicitaLectie(
+                      mesaj.deLa,
+                      mesaj._id,
+                      mesaj.data,
+                      mesaj.deLaNume
+                    )
+                  }
                 >
-                  Cerere {mesaj.status}
-                </span>
+                  ✏️ Răspunde
+                </button>
               </div>
             ))}
+            {mesaje?.length == 0 && (
+              <div>Momentan nu exista mesaje in asteptare</div>
+            )}
           </div>
-
           <button className="back-button" onClick={() => navigate("/")}>
             Înapoi la Home
           </button>
@@ -174,22 +140,51 @@ const Mentor = ({ afisareNotificare }) => {
       {meniuLectie && (
         <div className="examene-container">
           <div className="message-form-container">
-            <h2>Mesaj către {mentorAles?.nume}</h2>
-            <label>Titlu</label>
-            <input value={titlu} onChange={(e) => setTitlu(e.target.value)} />
-            <label>Cerere</label>
+            <h2 className="title">Mesaj către {numeElev}</h2>
+
+            <label className="form-label">Titlu</label>
+            <input
+              className="form-input"
+              value={titlu}
+              onChange={(e) => setTitlu(e.target.value)}
+            />
+
+            <label className="form-label">Cerere</label>
             <textarea
               rows={4}
+              className="form-textarea"
               value={cerere}
               onChange={(e) => setCerere(e.target.value)}
             />
-            <label>Data dorită</label>
+
+            <label className="form-label">Data dorită</label>
             <input
               type="date"
+              className="form-input"
               value={data}
               onChange={(e) => setData(e.target.value)}
             />
-            <button onClick={handleTrimite}>Trimite</button>
+
+            <label className="form-label">Status</label>
+
+            <select
+              className={`form-select ${
+                statusCerere === "acceptata"
+                  ? "select-success"
+                  : statusCerere === "refuzata"
+                  ? "select-danger"
+                  : ""
+              }`}
+              value={statusCerere}
+              onChange={(e) => setStatusCerere(e.target.value)}
+            >
+              <option value="acceptata">✅ Acceptă</option>
+              <option value="refuzata">❌ Refuză</option>
+            </select>
+
+            <button className="back-button" onClick={handleTrimite}>
+              Trimite
+            </button>
           </div>
         </div>
       )}
@@ -197,4 +192,4 @@ const Mentor = ({ afisareNotificare }) => {
   );
 };
 
-export default Mentor;
+export default CerereriElevi;

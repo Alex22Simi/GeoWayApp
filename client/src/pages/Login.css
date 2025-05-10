@@ -135,7 +135,17 @@
 
 .login-hidden {
   background-color: transparent;
-  border-color: #fff;
+  border: 2px solid #fff;
+  color: #fff; /* text alb */
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer; /* cursor pointer */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.login-hidden:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* efect ușor de hover */
+  transform: scale(1.05);
 }
 
 .login-form-container form {
@@ -201,58 +211,65 @@
 
 /* RESET PASSWORD STYLING */
 .reset-form {
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 188, 212, 0.25);
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: 350px; /* Mai mic decât 400 */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  justify-content: center; /* adăugat */
   gap: 1rem;
-  padding: 2rem 3rem;
   text-align: center;
 }
 
 .reset-form div {
-  font-size: 1rem;
-  color: #00796b;
+  font-size: 15px;
   font-weight: 500;
+  color: #004d52;
+  text-align: center;
+  margin-bottom: 8px;
 }
 
 .reset-form input {
-  background-color: #f1f1f1;
-  border: none;
-  padding: 12px 16px;
+  background-color: white;
+  border: 1px solid #00bcd4;
+  padding: 10px 16px;
   font-size: 14px;
   border-radius: 10px;
-  width: 50%;
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
   outline: none;
-  transition: 0.3s;
-  border: 1px solid #0c4951;
-  margin: 0 auto 0 auto;
+  transition: border-color 0.2s ease;
 }
 
 .reset-form input:focus {
-  background-color: #e0f7fa;
-  border: 1px solid #00bcd4;
+  border-color: #00bcd4; /* Fără schimbare de fundal, fără efect pe label */
 }
 
 .reset-form button {
   background-color: #00bcd4;
-  color: #fff;
+  color: white;
   font-weight: 600;
   font-size: 14px;
+  padding: 10px 24px;
+  border-radius: 10px;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: fit-content;
-  margin: 0 auto 0 auto;
+  transition: 0.3s ease;
+  margin-top: 10px;
 }
 
 .reset-form button:hover {
   background-color: #0097a7;
+  transform: scale(1.03);
 }
-
 .reset-form .reset-result {
   font-size: 0.9rem;
   color: #00796b;
   margin-top: 0.5rem;
+  text-align: center;
 }
