@@ -55,6 +55,8 @@ const TariEuropa = () => {
       obiecte={tariEuropa}
       numeObiecte={"tari europene"}
       numeHarta={"tari-europa"}
+      numeObiect={'țara'}
+      substantivFeminin={true}
     />
   );
 };

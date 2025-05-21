@@ -22,6 +22,8 @@ const UnitariRelief = () => {
       obiecte={unitatiRelief}
       numeObiecte={"unitatile de relief"}
       numeHarta={"unitati-relief"}
+      numeObiect={"unitatea"}
+      substantivFeminin={true}
     />
   );
 };

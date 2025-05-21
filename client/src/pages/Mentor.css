@@ -324,3 +324,12 @@
     transform: translateY(0);
   }
 }
+
+.cos {
+  width: 2rem;
+  margin-left: auto;
+}
+
+.cos:hover {
+  scale: 110%;
+}

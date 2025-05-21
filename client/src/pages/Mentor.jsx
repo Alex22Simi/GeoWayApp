@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
+import cosSvg from "../assets/cos.svg";
 
 import "./Mentor.css";
 
@@ -44,6 +45,10 @@ const Mentor = ({ afisareNotificare }) => {
           jwt: localStorage.getItem("jwt"),
         },
       });
+      if (resultat.status == 401) {
+        navigate("/login?redirectTo=mentor");
+        return;
+      }
       if (resultat.ok) {
         const date = await resultat.json();
         setMentori(date?.mentori || []);
@@ -97,10 +102,14 @@ const Mentor = ({ afisareNotificare }) => {
     }
   };
 
+  const incarcaDate = async () => {
+    await getMentori();
+    getMesaje();
+  };
+
   //DOM content loaded
   useEffect(() => {
-    getMentori();
-    getMesaje();
+    incarcaDate();
   }, []);
 
   const [mentori, setMentori] = useState([]);
@@ -112,6 +121,34 @@ const Mentor = ({ afisareNotificare }) => {
 
   const handleTrimite = async () => {
     await trimiteMesaj();
+  };
+
+  const handleDelete = async (messageId) => {
+    try {
+      const resultat = await fetch(`http://localhost:8080/mesaj/${messageId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          jwt: localStorage.getItem("jwt"),
+        },
+      });
+      const date = await resultat.json();
+      if (resultat.ok) {
+        afisareNotificare("Mesajul a fost sters!");
+        setMesaje((mesajeAnterioare) => {
+          const mesajeNoi = mesajeAnterioare.filter(
+            (mesaj) => mesaj._id != messageId
+          );
+          return mesajeNoi;
+        });
+        return;
+      }
+
+      afisareNotificare(date?.mesaj || "Mesajul nu a putut fi sters", "eroare");
+    } catch (error) {
+      console.error(error);
+      afisareNotificare("Mesajul nu a putut fi sters", "eroare");
+    }
   };
 
   return (
@@ -142,10 +179,15 @@ const Mentor = ({ afisareNotificare }) => {
             ))}
           </div>
 
-          <h2 className="title">Mesaje trimise & primite</h2>
+          <h2 className="title">Cereri de lecție soluționate</h2>
           <div className="examene-list">
             {mesaje?.map((mesaj, indexMesaj) => (
               <div key={indexMesaj} className="cerere-card">
+                <img
+                  src={cosSvg}
+                  className="cos"
+                  onClick={() => handleDelete(mesaj._id)}
+                />
                 <h2>{mesaj?.raspunsPentru?.titlu}</h2>
                 <h2>{mesaj?.data}</h2>
 
@@ -175,9 +217,9 @@ const Mentor = ({ afisareNotificare }) => {
         <div className="examene-container">
           <div className="message-form-container">
             <h2>Mesaj către {mentorAles?.nume}</h2>
-            <label>Titlu</label>
+            <label>Titlu lecție</label>
             <input value={titlu} onChange={(e) => setTitlu(e.target.value)} />
-            <label>Cerere</label>
+            <label>Mesaj cerere</label>
             <textarea
               rows={4}
               value={cerere}

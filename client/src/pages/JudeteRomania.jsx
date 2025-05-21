@@ -49,7 +49,8 @@ const JudeteRomania = () => {
   return (
     <PunctajHarti
       obiecte={judete}
-      numeObiecte={"judete"}
+      numeObiecte={"județe"}
+      numeObiect={"județul"}
       numeHarta={"judete-romania"}
     />
   );

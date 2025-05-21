@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "./Login.css";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 const URL_API = "http://localhost:8080";
 
 const Login = ({ onLogin, afisareNotificare }) => {
+  const query = new URLSearchParams(useLocation().search);
+  // console.log(query.get("redirectTo"));
   const [isActive, setIsActive] = useState(false);
   const [nume, setNume] = useState("");
   const [elev, setElev] = useState(true);
@@ -46,7 +48,8 @@ const Login = ({ onLogin, afisareNotificare }) => {
           afisareNotificare("Eroare autentifcare!", "eroare");
           return;
         }
-        navigate("/");
+        const redirectTo = query?.get("redirectTo") || "";
+        navigate("/" + redirectTo);
       } else {
         afisareNotificare(data.mesaj, "eroare");
       }

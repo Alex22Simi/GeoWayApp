@@ -159,7 +159,7 @@ const Examen = (props) => {
   };
 
   return (
-    <div className="examen-container">
+    <div className="examen-container" style={{ position: "relative" }}>
       {mesajEroare && <div>{mesajEroare}</div>}
       {!final && examen != null && (
         <>

@@ -9,8 +9,42 @@ import logo from "../../public/favicon.ico";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
+const URL_API = "http://localhost:8080";
 
 function Home({ afisareNotificare }) {
+
+  const handleUpdateProgres = async (today) => {
+    try {
+      const resultat = await fetch(`http://localhost:8080/progres/aplicatie`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          jwt: localStorage.getItem("jwt"),
+        },
+      });
+      if (resultat.ok) {
+        localStorage.setItem('lastUpdate', today)
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    try {
+      const lastUpdate = localStorage.getItem('lastUpdate')
+      const today = new Date().toLocaleDateString('en-CA', { timezone: 'Europe/Bucharest' })
+      if (!lastUpdate || lastUpdate != today) {
+        handleUpdateProgres(today)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
+
+  const navigate = useNavigate()
+
   return (
     <div>
       <NavBar afisareNotificare={afisareNotificare} />
@@ -22,7 +56,7 @@ function Home({ afisareNotificare }) {
 
       {/* Secțiunea Opțiuni */}
       <div id="options" className="container">
-        <button className="buton-optiuni">Hartă capitale Europa</button>
+        <button className="buton-optiuni" onClick={() => { navigate('/capitale-europa') }}>Hartă capitale Europa<img src={`${URL_API}/imagine/harti|europa_capitale-min.png`} /></button>
         <button className="buton-optiuni">Hartă râuri Europa</button>
         <button className="buton-optiuni">Hartă județe România</button>
         <button className="buton-optiuni">Hartă forme de relief România</button>

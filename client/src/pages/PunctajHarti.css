@@ -15,17 +15,20 @@
   margin: 10vh auto 0 auto;
 }
 
-.containerInfo {
-  margin: 5vh auto 0 auto;
-  width: fit-content;
-}
-
 .buton {
-  padding: 1rem;
-  border-radius: 15%;
-  background-color: rgb(12, 37, 37);
+  min-width: 180px; /* crește dimensiunea minimă */
+  padding: 1rem 1.2rem; /* spațiu intern mai generos */
+  border-radius: 12px;
+  background-color: #00bcd4;
   color: white;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 188, 212, 0.3);
+  border: none;
+  transition: transform 0.2s ease, background-color 0.3s;
+  text-align: center;
+  white-space: nowrap; /* 🔥 previne ruperea pe rânduri */
 }
 
 .container-butoane {
@@ -34,7 +37,111 @@
   gap: 1rem;
 }
 
+.containerInfo {
+  background-color: rgba(0, 188, 212, 0.05);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin: 5vh auto 1rem auto; /* adăugat spațiu de sus */
+  border: 2px dashed #00bcd4; /* culoarea albastră tematică */
+  box-shadow: 0 4px 10px rgba(0, 188, 212, 0.1);
+  font-family: "Segoe UI", sans-serif;
+  text-align: center;
+  max-width: 600px;
+  animation: fadeInTop 0.5s ease;
+}
+
+@keyframes fadeInTop {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .mesaj-final {
-  width: 50%;
-  margin: 10vh auto 0 auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 188, 212, 0.07);
+  padding: 2.5rem 3rem;
+  border-radius: 18px;
+  text-align: center;
+  border: 2px dashed #fbc02d;
+  box-shadow: 0 0 25px rgba(251, 192, 45, 0.4);
+  font-family: "Segoe UI", sans-serif;
+  animation: pulseFinal 1.5s infinite alternate ease-in-out;
+  max-width: 600px;
+  min-width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.mesaj-final h2 {
+  font-size: 2rem;
+  margin-bottom: 0.8rem;
+  color: #004d40;
+}
+
+.mesaj-final p {
+  font-size: 1.2rem;
+  color: #004d40;
+  margin: 0.8rem 0 0;
+}
+
+.emoji-final {
+  font-size: 2.8rem;
+  margin-bottom: 0.7rem;
+  animation: sparkle 2s infinite ease-in-out;
+}
+
+/* Butoanele pe un singur rând, de aceeași mărime */
+.container-butoane {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.buton {
+  width: 160px;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background-color: #00bcd4;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 188, 212, 0.3);
+  border: none;
+  transition: transform 0.2s ease, background-color 0.3s;
+  text-align: center;
+}
+
+.buton:hover {
+  background-color: #0097a7;
+  transform: scale(1.05);
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+  }
+}
+
+@keyframes pulseFinal {
+  0% {
+    box-shadow: 0 0 10px rgba(251, 192, 45, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(251, 192, 45, 0.7);
+  }
 }

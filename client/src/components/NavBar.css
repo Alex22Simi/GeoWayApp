@@ -66,6 +66,7 @@ body {
 
 .meniu {
   background-color: rgba(0, 188, 212, 0.7);
+  
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-top-right-radius: 20px;
@@ -74,6 +75,16 @@ body {
 
 .setari {
   right: -300px;
+  /* background-color: rgba(255, 65, 51, 0.7) !important; */
+}
+
+.mini-setari{
+  position: relative;
+  transform: translateY(50%);
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .meniu.deschis {

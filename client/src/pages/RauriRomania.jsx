@@ -49,9 +49,10 @@ const Rauri = () => {
   return (
     <PunctajHarti
       obiecte={rauri}
-      numeObiecte={"rauri"}
+      numeObiecte={"râuri"}
       numeHarta={"rauri-romania"}
-      // numeObiect={"raul"}
+      numeObiect={"râul"}
+      excludeDinTitlu={true}
     />
   );
 };

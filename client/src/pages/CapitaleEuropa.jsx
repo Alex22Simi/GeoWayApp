@@ -55,6 +55,8 @@ const CapitaleEuropa = () => {
       obiecte={capitale}
       numeObiecte={"capitale europene"}
       numeHarta={"capitale-europa"}
+      numeObiect={'capitala'}
+      substantivFeminin={true}
     />
   );
 };

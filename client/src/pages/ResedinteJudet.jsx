@@ -50,6 +50,7 @@ const ResedinteJudet = () => {
       obiecte={resedinte}
       numeObiecte={"resedinte"}
       numeHarta={"resedinte-judet"}
+      numeObiect={"reședința județului"}
     />
   );
 };

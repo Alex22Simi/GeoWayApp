@@ -5,27 +5,27 @@ import "./Harti.css";
 
 const hartiRomania = [
   {
-    titlu: "Harta judete romania",
+    titlu: "Hartă Județe România",
     poza: "harti|ro_judete-min.png",
     path: "/judete",
   },
   {
-    titlu: "Harta Rauri romania",
+    titlu: "Hartă Râuri România",
     poza: "harti|ro_rauri-min.png",
     path: "/rauri/romania",
   },
   {
-    titlu: "Harta Reședinta de judet",
+    titlu: "Hartă Reședințe",
     poza: "harti|ro_resedinte-min.png",
     path: "/resedinte-judet",
   },
   {
-    titlu: "Harta Unitari de relief",
+    titlu: "Hartă Unități de relief",
     poza: "harti|ro_unitati-min.png",
     path: "/unitati-relief",
   },
   {
-    titlu: "Harta Subunitati de relief",
+    titlu: "Hartă Subunități de relief",
     poza: "harti|ro_subunitati-min.png",
     path: "/subunitati",
   },
@@ -33,14 +33,14 @@ const hartiRomania = [
 
 const hartiEuropa = [
   {
-    titlu: "Harta capitale europene",
-    poza: "harti|europa_capitale-min.png",
-    path: "/capitale-europa",
-  },
-  {
-    titlu: "Harta tari europene",
+    titlu: "Hartă Țări Europene",
     poza: "harti|europa_tari-min.png",
     path: "/tari-europa",
+  },
+  {
+    titlu: "Hartă Capitale Europene",
+    poza: "harti|europa_capitale-min.png",
+    path: "/capitale-europa",
   },
 ];
 
@@ -53,7 +53,7 @@ const Harti = () => {
     <>
       <NavBar />
       <div className="examene-container">
-        <h2 className="title">Harti Romania</h2>
+        <h2 className="title">Hărți România</h2>
         <div className="examene-list">
           {hartiRomania.map((harta, index) => (
             <div
@@ -66,7 +66,7 @@ const Harti = () => {
             </div>
           ))}
         </div>
-        <h2 className="title">Harti Europa</h2>
+        <h2 className="title">Hărți Europa</h2>
         <div className="examene-list">
           {hartiEuropa.map((harta, index) => (
             <div

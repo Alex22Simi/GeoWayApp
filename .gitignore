@@ -36,3 +36,4 @@ logs/
 jest-html-reporters-*.html
 test-results/
 *.zip
+*.png

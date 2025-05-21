@@ -47,6 +47,8 @@ const SubunitatiRomania = () => {
       obiecte={unitatiRelief}
       numeObiecte={"subunitati"}
       numeHarta={"subunitati"}
+      numeObiect={"subunitatea"}
+      substantivFeminin={true}
     />
   );
 };

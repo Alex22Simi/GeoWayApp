@@ -12,12 +12,8 @@ const Lectie = () => {
   const navigate = useNavigate();
 
   const handleNext = () => {
-    if (idxLectie != capitol.lectii.length - 1) {
-      navigate(`/lectie/${idCapitol}/${+idxLectie + 1}`);
-      return;
-    }
-    alert("Ai terminat capitolul! Urmeaza un quizz!");
-    navigate(`/quizz/${idCapitol}`);
+    navigate(`/quizz/${idCapitol}/${+idxLectie + 1}/lectie`);
+    return;
   };
 
   return (
@@ -25,14 +21,14 @@ const Lectie = () => {
       <NavBar />
       <div className="examene-container">
         <h2 className="title">
-          {capitol.nume} lectia {+idxLectie + 1}
+          {capitol.nume} lectia {Math.round(+idxLectie / 2) + 1}
         </h2>
         <div>{lectie.continut}</div>
         {lectie.imagini.map((path, indexImg) => {
           return <img src={`${URL_API}/imagine/${path}`} />;
         })}
         <button onClick={() => handleNext()} style={{ marginTop: "10vh" }}>
-          Urmatoarea lectie
+          Catre quizz
         </button>
       </div>
     </>

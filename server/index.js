@@ -1,3 +1,4 @@
+const NR_LECTII = 3;
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -19,6 +20,8 @@ const an2023 = require("./storage/2023.js");
 const { verificareToken } = require("./middlewares.js");
 const Mesaj = require("./db/Models/Mesaj.js");
 const { default: mongoose } = require("mongoose");
+const multer = require("multer");
+const sharp = require("sharp");
 
 const emailSchema = Joi.string().email().max(50).required().messages({
   "string.email": "Introdu o adresă de email validă!",
@@ -219,7 +222,7 @@ app.post("/login", async (req, res) => {
         return res.status(200).json({
           mesaj: "Autentificat cu succes!",
           jwt: token,
-          userData: { elev: user.elev },
+          userData: { elev: user.elev, calePoza: user.calePoza, nume: user.nume },
         });
       }
     );
@@ -459,7 +462,7 @@ app.put("/mesaj", verificareToken, async (req, res) => {
     const { sub: email, nume } = req.verificat;
     const { titlu, cerere, data, pentru, status, raspunsPentru } = req.body;
 
-    if (!titlu || !cerere || !data) {
+    if (!cerere || !data) {
       return res
         .status(400)
         .json({ mesaj: "Va rugam completati toate campurile" });
@@ -469,7 +472,7 @@ app.put("/mesaj", verificareToken, async (req, res) => {
       deLa: email,
       pentru,
       deLaNume: nume,
-      titlu,
+      titlu: "",
       cerere,
       data,
       status,
@@ -478,11 +481,12 @@ app.put("/mesaj", verificareToken, async (req, res) => {
     if (!mesajInserat) {
       return res.status(500).json({ mesaj: "Mesajul nu a putut fi trimis" });
     }
-
+    let titluPrimaCere = "";
     if (raspunsPentru) {
       const mesaj = await Mesaj.findById(raspunsPentru);
       if (mesaj) {
         mesaj.status = status;
+        titluPrimaCere = mesaj.titlu;
         await mesaj.save();
       }
     }
@@ -549,7 +553,7 @@ app.put("/mesaj", verificareToken, async (req, res) => {
   <div class="container">
     <h1>Salutare de la GeoWay! 🌍</h1>
     <p>Ai primit răspuns la solicitarea de lecție cu titlul:</p>
-    <div class="highlight">${titlu}</div>
+    <div class="highlight">${titluPrimaCere}</div>
     <p>De la <strong>${nume}</strong></p>
     <p>Te rugăm să îți verifici secțiunea <a class="link-chat" href="http://localhost:5173/mentor">Chat cu mentorii</a> din aplicație pentru a vedea răspunsul.</p>
     <div class="footer">
@@ -654,6 +658,117 @@ app.get("/mesaje", verificareToken, async (req, res) => {
   }
 });
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+const { v4 } = require("uuid");
+const { calculZileConsecutive, calculBadgeuri } = require("./db/Models/progres.js");
+const Badge = require("./db/Models/Badge.js");
+
+app.put(
+  "/poza",
+  verificareToken,
+  upload.single("poza_profil"),
+  async (req, res) => {
+    try {
+      const { sub: email } = req.verificat;
+
+      if (!req.file) {
+        return res
+          .status(400)
+          .json({ error: true, mesaj: "Lipseste fisierul!" });
+      }
+
+      const imgBuffer = req.file.buffer;
+      const resizedBuffer = await sharp(imgBuffer)
+        .resize({
+          width: 400,
+          height: 400,
+          fit: "cover",
+        })
+        .toBuffer();
+
+      const uuid = v4();
+
+      const user = await User.findOne({ email: email });
+      const caleVeche = user.calePoza
+      if (caleVeche) {
+        fs.unlink(path.join(__dirname, "img-useri", `${caleVeche}.jpeg`), (err) => { })
+      }
+
+      fs.writeFileSync(
+        path.join(__dirname, "img-useri", `${uuid}.jpeg`),
+        resizedBuffer
+      );
+
+      user.calePoza = uuid;
+      await user.save();
+
+      return res.status(200).json({ success: true, calePoza: uuid });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ mesaj: "Eroare in preluarea mesajelor" });
+    }
+  }
+);
+
+app.delete(
+  "/poza",
+  verificareToken,
+  async (req, res) => {
+    try {
+      const { sub: email } = req.verificat;
+
+      const user = await User.findOne({ email: email });
+      const caleVeche = user.calePoza
+      if (caleVeche) {
+        fs.unlink(path.join(__dirname, "img-useri", `${caleVeche}.jpeg`), (err) => { })
+      }
+
+      user.calePoza = null;
+      await user.save();
+
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ mesaj: "Eroare in stergerea pozei" });
+    }
+  }
+);
+
+app.get("/poza/:cale", async (req, res) => {
+  try {
+    // const { sub: email } = req.verificat;
+    const { cale } = req.params;
+
+    const caleImg = path.join(__dirname, "img-useri", `${cale}.jpeg`);
+    if (!fs.existsSync(caleImg)) {
+      return res.status(400).json({ error: true, mesaj: "Poza nu exista" });
+    }
+
+    const stream = fs.createReadStream(caleImg);
+    res.setHeader("Content-Type", "image/jpeg");
+
+    stream.pipe(res);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in stergerea mesajului" });
+  }
+});
+
+app.delete("/mesaj/:idMesaj", verificareToken, async (req, res) => {
+  try {
+    const { sub: email } = req.verificat;
+    const { idMesaj } = req.params;
+
+    await Mesaj.findByIdAndDelete(idMesaj);
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in stergerea mesajului" });
+  }
+});
+
 app.get("/mesaje/all", verificareToken, async (req, res) => {
   try {
     const { sub: email } = req.verificat;
@@ -671,9 +786,10 @@ app.get("/mesaje/all", verificareToken, async (req, res) => {
   }
 });
 
-app.post("/barem/:an/:tip", async (req, res) => {
+app.post("/barem/:an/:tip", verificareToken, async (req, res) => {
   try {
     //fiecare obiect de raspuns are {id, type, val}
+    const { sub: email } = req.verificat;
     const { raspunsuri } = req.body;
     const an = req.params.an;
     const tip = req.params.tip;
@@ -729,7 +845,18 @@ app.post("/barem/:an/:tip", async (req, res) => {
       }
     });
 
-    console.log(`Utilizatorul a obținut ${punctaj} puncte`);
+    const user = await User.findOne({ email })
+    const examenUser = user.progres.examene.find(ex => ex.an == an && ex.tip == tip)
+    if (examenUser) {
+      if (examenUser.punctaj < punctaj) {
+        examenUser.punctaj = punctaj
+      }
+    } else {
+      user.progres.examene.push({ an, tip, punctaj })
+    }
+    await user.save()
+
+    console.log(`${user.nume} a obținut ${punctaj} puncte`);
 
     return res.status(200).json({ punctaj });
   } catch (error) {
@@ -928,6 +1055,188 @@ app.post("/verify-reset-code", async (req, res) => {
     return res.status(500).json({ mesaj: "Eroare de server." });
   }
 });
+
+app.put("/progres/harta", verificareToken, async (req, res) => {
+  try {
+    const { numeHarta, dinPrima, unitate } = req.body
+    const { sub: email } = req.verificat;
+    const user = await User.findOne({ email });
+    const hartaExistenta = user.progres.harti.filter((harta) => harta.nume == numeHarta)?.[0]
+    if (dinPrima == true && hartaExistenta && hartaExistenta.faraGreseli != true) {
+      hartaExistenta.faraGreseli = true
+    }
+    if (!hartaExistenta) {
+      user.progres.harti.push({ nume: numeHarta, faraGreseli: dinPrima, unitate })
+    }
+    await user.save()
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in actualizarea progresului" });
+  }
+});
+
+
+const harti = [
+  {
+    titlu: "Hartă Județe România",
+    poza: "harti|ro_judete-min.png",
+    path: "/judete-romania",
+  },
+  {
+    titlu: "Hartă Râuri România",
+    poza: "harti|ro_rauri-min.png",
+    path: "/rauri-romania",
+  },
+  {
+    titlu: "Hartă Reședințe",
+    poza: "harti|ro_resedinte-min.png",
+    path: "/resedinte-judet",
+  },
+  {
+    titlu: "Hartă Unități de relief",
+    poza: "harti|ro_unitati-min.png",
+    path: "/unitati-relief",
+  },
+  {
+    titlu: "Hartă Subunități de relief",
+    poza: "harti|ro_subunitati-min.png",
+    path: "/subunitati",
+  },
+  {
+    titlu: "Hartă Țări Europene",
+    poza: "harti|europa_tari-min.png",
+    path: "/tari-europa",
+  },
+  {
+    titlu: "Hartă Capitale Europene",
+    poza: "harti|europa_capitale-min.png",
+    path: "/capitale-europa",
+  },
+];
+
+
+const calculProgres = async (user) => {
+  const badgeuri = await Badge.find({ _id: { $in: user.progres.badgeuri } })
+  return {
+    rezultateExamene: user.progres.examene.map(ex => { return ({ nume: ex.tip.charAt(0).toUpperCase() + ex.tip.slice(1) + ' ' + ex.an, tip: ex.tip, an: ex.an, punctaj: ex.punctaj }) }),
+    hartiFinalizate: user.progres.harti.map(harta => {
+      const objHarta = harti.find(h => h.path.includes(harta.nume))
+      return {
+        faraGreseli: harta.faraGreseli,
+        nume: objHarta.titlu,
+        poza: objHarta.poza
+      }
+    }),
+    hartiDinPrima: user.progres.harti.filter(h => h.faraGreseli == true).map(harta => {
+      const objHarta = harti.find(h => h.path.includes(harta.nume))
+      return {
+        faraGreseli: harta.faraGreseli,
+        nume: objHarta.titlu,
+        poza: objHarta.poza
+      }
+    }),
+    zileConsecutive: calculZileConsecutive(user?.progres?.accessLog || []),
+    badgeuri,
+    quizzuri: [...(user?.progres?.lectiiFinalizate?.romania?.lectii?.map(e => { return { punctajQuizz: e.punctajQuizz, nume: e.nume } }) || []), ...(user?.progres?.lectiiFinalizate?.europa?.lectii?.map(e => { return { punctajQuizz: e.punctajQuizz, nume: e.nume } }) || [])],
+    procentajProgres: Math.round((100 / NR_LECTII) * ((user?.progres?.lectiiFinalizate?.romania?.lectii?.length || 0) + (user?.progres?.lectiiFinalizate?.europa?.lectii?.length || 0)))
+  }
+}
+
+app.get("/progres", verificareToken, async (req, res) => {
+  try {
+    const { sub: email } = req.verificat;
+    const user = await User.findOne({ email });
+
+    return res.status(200).json({ success: true, progres: await calculProgres(user) });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in preluarea progresului" });
+  }
+});
+
+app.post("/progres/aplicatie", verificareToken, async (req, res) => {
+  try {
+    const { sub: email } = req.verificat;
+    const user = await User.findOne({ email });
+    const today = new Date().toLocaleDateString('en-CA', { timezone: 'Europe/Bucharest' })
+    if (user?.progres?.accessLog && Array.isArray(user?.progres?.accessLog) && !user?.progres?.accessLog?.includes(today)) {
+      user.progres.accessLog.push(today)
+    }
+    await calculBadgeuri(user)
+    await user.save()
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in actualizarea progresului" });
+  }
+});
+
+app.post("/progres/lectie", verificareToken, async (req, res) => {
+  try {
+    const { sub: email } = req.verificat;
+    const { unitate,
+      indexCapitol,
+      indexLectie,
+      punctajQuizz,
+      finalizatQuizz,
+      nume
+    } = req.body
+    const user = await User.findOne({ email });
+    const lectii = user?.progres?.lectiiFinalizate?.[unitate]?.lectii
+    const lectie = lectii?.find(l => l.indexCapitol == indexCapitol && l.indexLectie == indexLectie)
+    if (lectie) {
+      lectie.punctajQuizz = punctajQuizz
+    } else {
+
+      if (!user.progres.lectiiFinalizate[unitate]) {
+        user.progres.lectiiFinalizate[unitate] = {}
+      }
+
+      if (user?.progres?.lectiiFinalizate?.[unitate]?.lectii) {
+        user.progres.lectiiFinalizate[unitate].lectii.push({
+          indexCapitol,
+          indexLectie,
+          punctajQuizz,
+          finalizatQuizz,
+          nume
+        })
+      } else {
+        user.progres.lectiiFinalizate[unitate].lectii = [{
+          indexCapitol,
+          indexLectie,
+          punctajQuizz,
+          finalizatQuizz,
+          nume
+        }]
+      }
+
+    }
+    await user.save()
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in actualizarea progresului" });
+  }
+});
+
+app.get("/progres/lectii", verificareToken, async (req, res) => {
+  try {
+    const { sub: email } = req.verificat;
+    const user = await User.findOne({ email });
+
+    return res.status(200).json({ success: true, lectii: user.progres.lectiiFinalizate });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ mesaj: "Eroare in actualizarea progresului" });
+  }
+});
+
+
+
 
 app.listen(8080, () => {
   const examen2024 = new Examen(an2024);

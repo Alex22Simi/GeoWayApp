@@ -1,9 +1,34 @@
 import { useNavigate } from "react-router-dom";
 import { LECTII } from "./dateLectii.js";
 import NavBar from "../../components/NavBar.jsx";
+import { useEffect } from "react";
 
 const Lectii = () => {
   const navigate = useNavigate();
+
+  //TODO de rezolvat race condition
+  const fetchLectii = async () => {
+    try {
+      const resultat = await fetch(`http://localhost:8080/progres/lectii`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          jwt: localStorage.getItem("jwt"),
+        }
+      });
+      if(resultat.ok){
+        const data = await resultat.json()
+        localStorage.setItem('lectii', JSON.stringify(data.lectii))
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(()=>{
+    fetchLectii()
+  }, [])
 
   return (
     <>

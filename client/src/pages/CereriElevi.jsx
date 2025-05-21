@@ -24,6 +24,10 @@ const CerereriElevi = ({ afisareNotificare }) => {
           jwt: localStorage.getItem("jwt"),
         },
       });
+      if (resultat.status == 401) {
+        navigate("/login?redirectTo=elevi");
+        return;
+      }
       if (resultat.ok) {
         const date = await resultat.json();
 
@@ -48,7 +52,7 @@ const CerereriElevi = ({ afisareNotificare }) => {
         },
         body: JSON.stringify({
           pentru: elevAles,
-          titlu,
+          // titlu,
           cerere,
           data,
           status: statusCerere,
@@ -142,12 +146,12 @@ const CerereriElevi = ({ afisareNotificare }) => {
           <div className="message-form-container">
             <h2 className="title">Mesaj către {numeElev}</h2>
 
-            <label className="form-label">Titlu</label>
+            {/* <label className="form-label">Titlu</label>
             <input
               className="form-input"
               value={titlu}
               onChange={(e) => setTitlu(e.target.value)}
-            />
+            /> */}
 
             <label className="form-label">Cerere</label>
             <textarea
