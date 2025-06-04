@@ -32,14 +32,14 @@ const PunctajHarti = ({
 
   const trimiteProgresHarta = async (numeHarta, dinPrima, unitate) => {
     try {
-      const response =  fetch(`${URL_API}/progres/harta`, {
+      const response = fetch(`${URL_API}/progres/harta`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           jwt: localStorage.getItem("jwt"),
         },
         body: JSON.stringify({
-          numeHarta, dinPrima, unitate 
+          numeHarta, dinPrima, unitate
         }),
       });
     } catch (error) {
@@ -73,8 +73,8 @@ const PunctajHarti = ({
       if (indexCurent + 1 == obiecteJoc.length) {
         // alert(`Ai ghicit ${punctajDinPrima.current} ${numeObiecte} din prima`);
         trimiteProgresHarta(numeHarta, punctajDinPrima.current == obiecteJoc.length,
-          numeHarta.includes('europa') ? 'Europa': 'Romania'
-         )
+          numeHarta.includes('europa') ? 'Europa' : 'Romania'
+        )
         setMesajFinal(true);
         return;
       }

@@ -446,7 +446,7 @@ const NavBar = ({ afisareNotificare }) => {
           >
             Sterge poza de profil
           </button>
-          <button className="buton-meniu">Schimbare parolă</button>
+
           {userData.elev}
           {userData?.elev == false && (
             <button

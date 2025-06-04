@@ -51,18 +51,30 @@ function Home({ afisareNotificare }) {
       {/* Secțiunea Hero */}
       <div id="hero" className="container">
         <img src={logo} className="logo" alt="Logo" />
-        <div className="mesaj-aplicatie">Bine ați venit!</div>
+        {/* <div className="mesaj-aplicatie">Bine ați venit!</div> */}
       </div>
 
       {/* Secțiunea Opțiuni */}
-      <div id="options" className="container">
-        <button className="buton-optiuni" onClick={() => { navigate('/capitale-europa') }}>Hartă capitale Europa<img src={`${URL_API}/imagine/harti|europa_capitale-min.png`} /></button>
-        <button className="buton-optiuni">Hartă râuri Europa</button>
-        <button className="buton-optiuni">Hartă județe România</button>
-        <button className="buton-optiuni">Hartă forme de relief România</button>
-        <button className="buton-optiuni">Hartă râuri România</button>
+      <div className="optiuni-harti-container">
+        <div className="harti-list">
+          <div className="harti-card" onClick={() => navigate('/judete')}>
+            <h3>Hartă Județe România</h3>
+            <img src={`${URL_API}/imagine/harti|ro_judete-min.png`} alt="Judete" />
+          </div>
+          <div className="harti-card" onClick={() => navigate('/resedinte-judet')}>
+            <h3>Hartă Reședințe România</h3>
+            <img src={`${URL_API}/imagine/harti|ro_resedinte-min.png`} alt="Resedinte" />
+          </div>
+          <div className="harti-card" onClick={() => navigate('/tari-europa')}>
+            <h3>Hartă Țări Europa</h3>
+            <img src={`${URL_API}/imagine/harti|europa_tari-min.png`} alt="Tari Europa" />
+          </div>
+          <div className="harti-card" onClick={() => navigate('/capitale-europa')}>
+            <h3>Hartă Capitale Europa</h3>
+            <img src={`${URL_API}/imagine/harti|europa_capitale-min.png`} alt="Capitale Europa" />
+          </div>
+        </div>
       </div>
-
       {/* Secțiunea Despre Mine */}
       <div id="despre-mine" className="container">
         <div className="sectiune-despre">
