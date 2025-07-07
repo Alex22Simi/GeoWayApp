@@ -25,16 +25,18 @@ const userSchema = new mongoose.Schema({
           punctaj: Number
         }
       },
-      europa: [{
-        indexCapitol: Number,
-        indexLectie: Number,
-        punctajQuizz: Number,
-        finalizatQuizz: Boolean,
-        nume: String
-      }],
-      quizzMare: {
-        punctaj: Number
-      }
+      europa: {
+        lectii: [{
+          indexCapitol: Number,
+          indexLectie: Number,
+          punctajQuizz: Number,
+          finalizatQuizz: Boolean,
+          nume: String
+        }],
+        quizzMare: {
+          punctaj: Number
+        }
+      },
     },
     examene: [{
       an: String,

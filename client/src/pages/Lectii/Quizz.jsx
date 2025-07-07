@@ -2,13 +2,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import { LECTII } from "./dateLectii";
 import NavBar from "../../components/NavBar";
 import { useState } from "react";
+import "../Lectii/Quizz.css"
 
 const Quizz = () => {
+  const [final, setFinal] = useState(false)
   const { idCapitol, idxQuizz, din
   } = useParams();
   const [pasEvaluare, setPasEvaluare] = useState(false)
   const navigate = useNavigate();
   const capitol = LECTII.capitole.find((cap) => cap.id == idCapitol);
+  const ultimul = capitol?.lectii?.length - 1 == idxQuizz
+  // console.log(ultimul)
   const quizz = capitol.lectii[
     idxQuizz
   ];
@@ -40,7 +44,7 @@ const Quizz = () => {
 
 
       if (din == 'quizz') {
-        navigate('/')
+        navigate('/quizzuri')
         return
       }
 
@@ -78,7 +82,7 @@ const Quizz = () => {
   return (
     <>
       <NavBar />
-      <div className="examene-container">
+      {!pasEvaluare && <div className="examene-container">
         <h2 className="title">Quizz {capitol.nume}</h2>
 
         <div>
@@ -111,18 +115,43 @@ const Quizz = () => {
               </div>
             );
           })}
-          {!pasEvaluare && <button onClick={() => { nextPas() }} style={{ marginTop: "10vh" }}>
-            Calcul punctaj
-          </button>}
-          {pasEvaluare &&
-            <div>
-              <div>Punctaj obtinut : {punctaj}</div>
-              <button onClick={() => { handleNext() }} style={{ marginTop: "10vh" }}>
-                {din == 'quizz' ? 'Catre home' : 'Catre urmatoarea lectie'}
+          {!pasEvaluare && (
+            <button className="quiz-btn" onClick={nextPas}>
+              Trimite răspunsuri
+            </button>
+          )}
+
+          {/* {pasEvaluare && (
+            <div className="rezultat-box">
+              <div className="rezultat-text">🎯 Punctaj obținut: <strong>{punctaj}</strong></div>
+              <button className="quiz-btn" onClick={handleNext}>
+                {din === 'quizz' ? '🏠 Către home' : '📘 Către următoarea lecție'}
               </button>
-            </div>}
+            </div>
+          )} */}
+
         </div>
-      </div>
+      </div>}
+      {pasEvaluare && (
+        <div className="rezultat-final">
+          <div className="card-final">
+            <h2>🎉 Felicitări! 🎉</h2>
+            <p>
+              Ai obținut <strong>{Math.round(punctaj / 10)} puncte</strong> la quizz!
+            </p>
+            {ultimul && <div>Felicitari! Ai terminat intregul capitol!</div>}
+            <div className="butoane-final">
+              <button onClick={() => navigate('/')}>
+                🏠 Pagina principală
+              </button>
+              {!ultimul && <button onClick={handleNext}>
+                {din == 'quizz' ? 'Catre quizzuri' : ' Către următoarea lecție'}
+              </button>}
+            </div>
+          </div>
+          <div className="confetti"></div>
+        </div>
+      )}
     </>
   );
 };

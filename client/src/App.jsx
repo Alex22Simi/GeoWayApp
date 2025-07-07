@@ -55,7 +55,6 @@ function App() {
     <div>
       <BrowserRouter>
         <Routes>
-          {/* Ruta pentru pagina principală */}
           <Route
             path="/"
             element={
@@ -66,14 +65,10 @@ function App() {
               />
             }
           />
-
-          {/* Ruta pentru examene, protejată de autentificare */}
           <Route
             path="/examene"
             element={isAuthenticated ? <Examene /> : <Navigate to="/login" />}
           />
-
-          {/* Ruta pentru un examen specific, protejată de autentificare */}
           <Route
             path="/examen/:an/:tip"
             element={isAuthenticated ? <Examen /> : <Navigate to="/login" />}

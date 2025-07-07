@@ -20,7 +20,7 @@ const PunctajHarti = ({
   excludeDinTitlu,
   substantivFeminin,
 }) => {
-  obiecte = obiecte.slice(0, 2); // pentru test, doar primele 2
+  //obiecte = obiecte.slice(0, 2); // pentru test, doar primele 2
   const [obiecteJoc, setObiecteJoc] = useState(obiecte);
   const [indexCurent, setIndexCurent] = useState(0);
   const [numeCurent, setNumeCurent] = useState(obiecteJoc[0].nume);
@@ -54,8 +54,8 @@ const PunctajHarti = ({
   const handleClick = (e) => {
     const id = e.target.id;
     clickuri.current = clickuri.current + 1;
-    // console.log(e.target);
-    if (id == obiecteJoc[indexCurent].id) {//rasp corect
+    if (id == obiecteJoc[indexCurent].id) {
+      document.querySelectorAll('.indiciu').forEach(el => el.classList.remove('indiciu'))
       audio.play()
       e.target.classList.add("apasat");
       e.target.classList.remove("indiciu");
@@ -71,7 +71,6 @@ const PunctajHarti = ({
       dinPrima.current = true;
       clickuri.current = 0;
       if (indexCurent + 1 == obiecteJoc.length) {
-        // alert(`Ai ghicit ${punctajDinPrima.current} ${numeObiecte} din prima`);
         trimiteProgresHarta(numeHarta, punctajDinPrima.current == obiecteJoc.length,
           numeHarta.includes('europa') ? 'Europa' : 'Romania'
         )
@@ -85,18 +84,32 @@ const PunctajHarti = ({
     } else {
       dinPrima.current = false;
       const obiect = obiecte.find((obj) => obj.id == id);
-      // alert(obiect.nume);
-      // console.log(obiecte);
       if (clickuri.current >= 3) {
-        const judete = Array.from(document.querySelectorAll(".desktop"));
-        const judet = judete.find(
-          (judet) => judet.id == obiecteJoc[indexCurent].id
-        );
-        // console.log("gasit :");
-        console.log(judet);
-        judet.classList.add("indiciu");
-        judet.classList.remove('neales')
-        console.log(judet.classList);
+        {
+          const judete = Array.from(document.querySelectorAll(".desktop"));
+          console.log(judete.length)
+          const judet = judete.find(
+            (judet) => judet.id == obiecteJoc[indexCurent].id
+          );
+          // console.log("gasit :");
+          console.log(judet);
+          judet.classList.add("indiciu");
+          judet.classList.remove('neales')
+          console.log(judet.classList);
+        }
+
+        {
+          const judete = Array.from(document.querySelectorAll(".mobil"));
+          console.log(judete.length)
+          const judet = judete.find(
+            (judet) => judet.id == obiecteJoc[indexCurent].id
+          );
+          // console.log("gasit :");
+          console.log(judet);
+          judet.classList.add("indiciu");
+          judet.classList.remove('neales')
+          console.log(judet.classList);
+        }
       }
       setRaspunsGresit(obiect?.nume);
       setTimeout(() => {
@@ -123,7 +136,7 @@ const PunctajHarti = ({
         <div>
           <div className="containerInfo">
             <h2 style={{ color: "#003366", marginBottom: "0.4rem" }}>
-              🎯 Găsește {excludeDinTitlu ? '' : numeObiect}{' '}
+              Găsește {excludeDinTitlu ? '' : numeObiect}{' '}
               <span style={{ color: "#00bcd4" }}>{numeCurent}</span>!
             </h2>
             <p style={{ margin: 0 }}>
@@ -188,18 +201,18 @@ const PunctajHarti = ({
       {mesajFinal && (
         <div className="mesaj-final">
           <div className="emoji-final">🏆</div>
-          <h2>Felicitări! Ai terminat harta! 🎉</h2>
+          <h2>Felicitări! Ai terminat harta!</h2>
           <p>
             Ai răspuns corect la <strong>{punctajDinPrima.current}</strong> din{" "}
             <strong>{obiecte.length}</strong> din prima încercare. Super tare!
-            🚀
+
           </p>
           <div className="container-butoane">
             <button className="buton" onClick={() => navigate("/harti")}>
-              📖 Către hărți
+              Către hărți
             </button>
             <button className="buton" onClick={() => navigate("/")}>
-              🏠 Către acasă
+              Către acasă
             </button>
           </div>
         </div>

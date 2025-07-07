@@ -1,4 +1,4 @@
-const NR_LECTII = 3;
+const NR_LECTII = 20;
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -15,6 +15,7 @@ const nodemailer = require("nodemailer");
 const { db } = require("./db/dbConnect.js");
 const User = require("./db/Models/User.js");
 const Examen = require("./db/Models/Examen.js");
+const an2025 = require("./storage/2025.js");
 const an2024 = require("./storage/2024.js");
 const an2023 = require("./storage/2023.js");
 const { verificareToken } = require("./middlewares.js");
@@ -76,9 +77,8 @@ app.get("/examen/:an/:tip", async (req, res) => {
 
     const examen = await Examen.findOne({
       an: an,
-      "subiecte.tip": tip,
     }).select("-_id -an");
-    const subiect = examen.subiecte[0];
+    const subiect = examen.subiecte.find(s => s?.tip == tip);
     return res.status(200).json(subiect);
   } catch (error) {
     return res.status(500).json([]);
@@ -126,7 +126,7 @@ app.get("/imagine/:fileName", async (req, res) => {
 
 app.post("/signup", async (req, res) => {
   try {
-    const { nume, email, parola, parolaConfirm, elev } = req.body;
+    const { nume, email, parola, parolaConfirm, elev, codAcces } = req.body;
     // console.log(req.body);
     if (!nume || nume.length == 0) {
       // console.log(nume);
@@ -150,11 +150,16 @@ app.post("/signup", async (req, res) => {
       return res.status(400).json({ mesaj: "Lipsește parametrul elev!" });
     }
 
+
     const user = await User.findOne({ email });
     if (user) {
       return res
         .status(400)
         .json({ mesaj: "Există deja un cont cu această adresă de email!" });
+    }
+
+    if (!elev && (!codAcces || codAcces != 'fucbvt6ho24837tl834th')) {
+      return res.status(500).json({ mesaj: "Codul de acces nu este corect!" });
     }
 
     const salt = await bcrypt.genSalt(2);
@@ -802,6 +807,7 @@ app.post("/barem/:an/:tip", verificareToken, async (req, res) => {
       "subiecte.tip": tip,
     }).select("-_id -an");
     const subiectExamen = examen.subiecte?.[0];
+    // const subiectExamen = examen.subiecte.find(s => s?.tip == tip);
     if (!subiectExamen) {
       return res.status(400).json("Examenul nu exista!");
     }
@@ -1186,15 +1192,18 @@ app.post("/progres/lectie", verificareToken, async (req, res) => {
     } = req.body
     const user = await User.findOne({ email });
     const lectii = user?.progres?.lectiiFinalizate?.[unitate]?.lectii
+    // console.log(lectii)
+    // if (!lectii) {
+    // user.progres.lectiiFinalizate[unitate].lectii = []
+    // }
     const lectie = lectii?.find(l => l.indexCapitol == indexCapitol && l.indexLectie == indexLectie)
     if (lectie) {
       lectie.punctajQuizz = punctajQuizz
     } else {
-
+      // console.log('negasita')
       if (!user.progres.lectiiFinalizate[unitate]) {
         user.progres.lectiiFinalizate[unitate] = {}
       }
-
       if (user?.progres?.lectiiFinalizate?.[unitate]?.lectii) {
         user.progres.lectiiFinalizate[unitate].lectii.push({
           indexCapitol,
@@ -1204,6 +1213,7 @@ app.post("/progres/lectie", verificareToken, async (req, res) => {
           nume
         })
       } else {
+        console.log('3')
         user.progres.lectiiFinalizate[unitate].lectii = [{
           indexCapitol,
           indexLectie,
@@ -1214,6 +1224,8 @@ app.post("/progres/lectie", verificareToken, async (req, res) => {
       }
 
     }
+
+
     await user.save()
 
     return res.status(200).json({ success: true });
@@ -1239,10 +1251,13 @@ app.get("/progres/lectii", verificareToken, async (req, res) => {
 
 
 app.listen(8080, () => {
-  const examen2024 = new Examen(an2024);
+  // const examen2025 = new Examen(an2025);
+  // const examen2024 = new Examen(an2024);
   // const examen2023 = new Examen(an2023);
+
+  // examen2025.save();
   // examen2024.save();
-  //examen2023.save();
+  // examen2023.save();
 
   console.log("Server pornit pe portul 8080!");
 });

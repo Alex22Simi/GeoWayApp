@@ -1,108 +1,8 @@
-/*import { useState } from 'react';
-import { useEffect } from 'react';
-import {LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid} from 'recharts'
-const URL_API = "http://localhost:8080";
-
-const data = [
-    {nume: 'Bac 2024', punctaj : 70 },
-    {nume: 'Simulare 2025', punctaj : 80 },
-    {nume: 'Simulare 2023', punctaj : 60 },
-    {nume: 'Simulare 2024', punctaj : 95 },
-]
-
-const procentajProgres = 50
-
-const EvolutiaMea = () => {
-
-    const [progres, setProgres] = useState({})
-
-    const fetchProgres = async (today) => {
-        try {
-          const resultat = await fetch(`http://localhost:8080/progres`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              jwt: localStorage.getItem("jwt"),
-            },
-          });
-          if(resultat.ok){
-            const data = await resultat.json()
-            setProgres(data.progres)
-            console.log(data)
-          }
-    
-        } catch (error) {
-          console.error(error);
-        }
-      };
-
-      useEffect(()=>{
-        fetchProgres()
-      }, [])
-
-    return (<div>
-
-        <div>
-            <label>Progresul meu</label>
-            <div style={{display:'flex', gap:"12px"}}>
-            <div style={{width:'80%'}}>
-            <div style={{background: '#eee', borderRadius: '8px', width: '100%', height:'20px'}}>
-                <div style={{background: 'rgb(36, 58, 144)', borderRadius: '8px', width: `${procentajProgres}%`, height:'20px'}}></div>
-            </div>
-            </div>
-            <div>{procentajProgres}%</div>
-            </div>
-
-
-        </div>
-
-        <div>
-            <h3>Badge-urile mele:</h3>
-            {progres?.badgeuri?.map((b, indexBadge)=>{
-                return (
-                    <div key={indexBadge}>
-                        <label>{b?.nume}</label>
-                        <div>{b?.descriere}</div>
-                        <img src={`${URL_API}/imagine/${b._id}.png`} style={{width:'100px'}}/>
-                    </div>
-                )
-            })}
-
-        </div>
-
-        <div>
-            <h3>Harti finalizate din prima</h3>
-            {progres?.hartiDinPrima?.map((harta, idxHarta)=>{
-                return (
-                    <div key={idxHarta}>
-                        <div>{harta.nume}</div>
-                    </div>
-                )
-            })}
-
-        </div>
-
-        <div>
-            <label>Scoruri la examene</label>
-
-            <LineChart width={500} height={500} data={progres?.rezultateExamene}>
-                <XAxis dataKey={"nume"}/>
-                <YAxis/>
-                <Tooltip/>
-                <CartesianGrid stroke="#eeffee"/>
-                <Line type="monotone" dataKey='punctaj' stroke='rgb(0,0,230)'/>
-            </LineChart>
-        </div>
-
-    </div>)
-}
-
-export default EvolutiaMea*/
-
 
 import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import './EvolutiaMea.css';
+import mapIcon from '../assets/map.svg';
 
 const URL_API = "http://localhost:8080";
 
@@ -148,24 +48,77 @@ const EvolutiaMea = () => {
                 <div>
                     <h4>Scoruri la Examene</h4>
                     <LineChart width={900} height={350} data={progres?.rezultateExamene} className='grafic'>
-                        <XAxis dataKey="nume" />
-                        <YAxis />
-                        <Tooltip />
-                        <CartesianGrid stroke="#ccc" />
-                        <Line type="monotone" dataKey="punctaj" stroke="#00BFFF" strokeWidth={3} dot={{ r: 5 }} />
+                        <XAxis
+                            dataKey="nume"
+                            stroke="#007c91"
+                            tick={{ fontSize: 14, fontFamily: 'Segoe UI' }}
+                        />
+                        <YAxis
+                            stroke="#007c91"
+                            tick={{ fontSize: 14, fontFamily: 'Segoe UI' }}
+                        />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: "#e0f7fa",
+                                borderRadius: "8px",
+                                border: "1px solid #00bcd4",
+                                fontFamily: 'Segoe UI',
+                                padding: "6px 12px",
+                                fontSize: "0.8rem",
+                            }}
+                            labelStyle={{ color: "#007c91", fontWeight: "bold", fontSize: "0.8rem" }}
+                            formatter={(value, name) => [`${value}`, name === "punctaj" ? "Punctaj" : "Scor"]}
+                            labelFormatter={(label) => `📘 ${label}`}
+                        />
+                        <CartesianGrid stroke="#ccc" strokeDasharray="4 4" />
+                        <Line
+                            type="monotone"
+                            dataKey="punctaj" // ← AICI era greșeala, aveai punctajQuizz
+                            stroke="#00bcd4"
+                            strokeWidth={3}
+                            dot={{ r: 6, stroke: "#e0f7fa", strokeWidth: 2 }}
+                            activeDot={{ r: 8 }}
+                        />
                     </LineChart>
                 </div>
 
                 <div>
                     <h4>Scoruri la Quizz-uri</h4>
                     <LineChart width={900} height={350} data={progres?.quizzuri} className='grafic'>
-                        <XAxis dataKey="nume" />
-                        <YAxis />
-                        <Tooltip />
-                        <CartesianGrid stroke="#ccc" />
-                        <Line type="monotone" dataKey="punctajQuizz" stroke="#00BFFF" strokeWidth={3} dot={{ r: 5 }} />
+                        <XAxis
+                            dataKey="nume"
+                            stroke="#007c91"
+                            tick={{ fontSize: 14, fontFamily: 'Segoe UI' }}
+                        />
+                        <YAxis
+                            stroke="#007c91"
+                            tick={{ fontSize: 14, fontFamily: 'Segoe UI' }}
+                        />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: "#e0f7fa",
+                                borderRadius: "8px",
+                                border: "1px solid #00bcd4",
+                                fontFamily: 'Segoe UI',
+                                padding: "6px 12px",
+                                fontSize: "0.8rem",
+                            }}
+                            labelStyle={{ color: "#007c91", fontWeight: "bold", fontSize: "0.8rem" }}
+                            formatter={(value, name) => [`${value}`, name === "punctaj" ? "Punctaj" : "Scor"]}
+                            labelFormatter={(label) => `📘 ${label}`}
+                        />
+                        <CartesianGrid stroke="#ccc" strokeDasharray="4 4" />
+                        <Line
+                            type="monotone"
+                            dataKey="punctajQuizz"
+                            stroke="#00bcd4"
+                            strokeWidth={3}
+                            dot={{ r: 6, stroke: "#e0f7fa", strokeWidth: 2 }}
+                            activeDot={{ r: 8 }}
+                        />
                     </LineChart>
                 </div>
+
 
             </div>
 
@@ -175,7 +128,12 @@ const EvolutiaMea = () => {
                     <h4>Hărți Finalizate</h4>
                     <ul>
                         {progres?.hartiDinPrima?.map((h, i) => (
-                            <li key={i}>✅ {h.nume}</li>
+                            <li key={i}>
+                                <div className="linie-harta">
+                                    <img src={mapIcon} alt="map" className="map-icon" />
+                                    <span>{h.nume.trim()}</span>
+                                </div>
+                            </li>
                         ))}
                     </ul>
                 </div>

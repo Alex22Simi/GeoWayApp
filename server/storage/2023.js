@@ -2,11 +2,10 @@ const an2023 = {
   an: 2023,
   subiecte: [
     {
-      tip: "bac", //ID-ul din URL
+      tip: "bac",
       nume: "Examenul național de bacalaureat 2023",
       info: "Toate subiectele sunt obligatorii. Se acordă zece puncte din oficiu.",
       puncte: [
-        //SUB I
         {
           cerinta:
             "Harta de mai sus se referă la subiectul I A – E. Pe hartă sunt marcate state cu litere şi oraşe - capitală cu numere.",
@@ -116,7 +115,6 @@ const an2023 = {
                     punctaj: 2,
                   },
                 ],
-                //notele 1,2,3
               },
               E: {
                 cerinta: "Alegeți variantele corecte: ",
@@ -142,7 +140,6 @@ const an2023 = {
             },
           ],
         },
-        //SUB II
         {
           cerinta:
             "Harta de mai sus se referă la subiectul II A – D. Pe hartă sunt marcate unităţi de relief cu litere, oraşe cu numere de la 1 la 6 şi râuri cu numere de la 7 la 12.",
@@ -181,7 +178,7 @@ const an2023 = {
                   {
                     intrebare:
                       "Orașul marcat, pe hartă, cu numărul 3 se numește...",
-                    raspunsuri: ["Zalău"], //ce vazut ce facem cu diacriticele
+                    raspunsuri: ["Zalău"],
                     tip: "completare",
                     punctaj: 2,
                   },
@@ -189,7 +186,7 @@ const an2023 = {
                     intrebare:
                       "În subunitatea de relief marcată, pe hartă, cu litera A pătrund influențe climatice ...",
                     raspunsuri: [
-                      "scandinavo baltice", //de vazut aici,
+                      "scandinavo baltice",
                       "continentale",
                       "ariditate",
                       "est europene",
@@ -259,11 +256,9 @@ const an2023 = {
                 cerinta:
                   "Prezentați trei deosebiri între relieful unităţii marcate, pe hartă, cu litera B şi relieful unităţii marcate, pe hartă, cu litera E.",
                 optiuni: ["sbhsd", "dshduisyd87w8d", "3", "4", "5"],
-                //aici vreau sa bag si nota1, nota2, nota 3
                 tip: "alegere-speciala",
                 raspunsuri: ["sbhsd", "dshduisyd87w8d"],
                 punctaj: 2,
-                //2 puncter per desebire corecta
               },
               E: {
                 cerinta: "",
@@ -276,7 +271,6 @@ const an2023 = {
                     tip: "alegere-speciala",
                     punctaj: 2,
                     raspunsuri: ["sbhsd", "dshduisyd87w8d"],
-                    //2 puncter per desebire corecta
                   },
                   {
                     //daca aici nu am e ok sa las gol?

@@ -27,10 +27,10 @@ const TIPURI_MENIU = {
   STERGE_POZA: 5
 };
 
-const displayNume = (nume) => {
+const displayNume = (nume = "") => {
   const LIMITA_CARACTERE = 7
 
-  if (nume <= LIMITA_CARACTERE) {
+  if (nume.length <= LIMITA_CARACTERE) {
     return nume
   }
 
@@ -332,7 +332,7 @@ const NavBar = ({ afisareNotificare }) => {
 
             {tipMeniu == TIPURI_MENIU.STERGE_POZA && (
               <>
-                <label>Stergeti poza de profil ?</label>
+                <label>Ștergi poza de profil?</label>
                 <button onClick={handlePozaDelete}>
                   Stergere
                 </button>
@@ -382,7 +382,7 @@ const NavBar = ({ afisareNotificare }) => {
             <div className="text-profil">{displayNume(numeNav)}</div>
           </div>
         </div>
-        <div className="text-profil" style={{ padding: '0 1rem' }}>{progres?.procentajProgres}% completat</div>
+        <div className="text-profil" style={{ padding: '0 1rem' }}>{!Number.isNaN(progres?.procentajProgres) ? progres?.procentajProgres : 0}% completat</div>
         <div className="buton-meniu" onClick={() => navigate("/lectii")}>
           Lecții
         </div>
@@ -444,7 +444,7 @@ const NavBar = ({ afisareNotificare }) => {
             className="buton-meniu"
             onClick={() => handleMeniu(TIPURI_MENIU.STERGE_POZA)}
           >
-            Sterge poza de profil
+            Șterge poza de profil
           </button>
 
           {userData.elev}

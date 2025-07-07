@@ -15,6 +15,7 @@ const Examen = (props) => {
   const [mesajEroare, setMesajEroare] = useState("");
   const [final, setFinal] = useState(false);
   const [punctaj, setPunctaj] = useState(0);
+
   const getExamen = async () => {
     const resultat = await fetch(`${URL_API}/examen/${an}/${tip}`);
     if (resultat.status == 200) {
@@ -62,17 +63,12 @@ const Examen = (props) => {
 
   const capturareRaspunsuri = () => {
     const raspunsuri = [];
-
-    // Get all inputs with class "raspuns"
     const toate = Array.from(document.getElementsByClassName("raspuns"));
-    // console.log(toate.slice(0, 10));
-    // Group radios by their `name`
     const radioGroups = new Set();
     toate.forEach((el) => {
       if (el.type === "radio") radioGroups.add(el.name);
     });
 
-    // Handle text and checkbox
     toate.forEach((el) => {
       if (el.type === "text" || el.type === "number") {
         raspunsuri.push({
@@ -88,8 +84,6 @@ const Examen = (props) => {
         });
       }
     });
-    // const rasp = [];
-    // console.log(radioGroups);
     radioGroups.forEach((groupName) => {
       const selected = document.querySelector(
         `input[name="${groupName}"]:checked`
@@ -103,42 +97,10 @@ const Examen = (props) => {
       }
     });
 
-    // console.log(rasp);
-
-    // return;
-
-    // const payload = raspunsuri.map((raspuns) => {
-    //   // if (raspuns.type == "radio") {
-    //   //   console.log(raspuns);
-    //   // }
-    //   return {
-    //     id: raspuns.id,
-    //     val: raspuns.value,
-    //     type: raspuns.type,
-    //   };
-    // });
-
     console.log(raspunsuri);
     return raspunsuri;
   };
-  //text / number	Se citește direct valoarea completată (value)
-  //checkbox	Se verifică dacă este bifat, se extrage opțiunea
-  //radio	Se caută butonul radio bifat din fiecare grup
 
-  //"alegere~0~a~2~B"
-  //alegere = tipul întrebării
-  // 0 = indexul subiectului
-  //a = litera subpunctului
-  //2 = indexul întrebării
-  //B = opțiunea selectată
-
-  // [
-  //   { id: "completare~0~a~1", val: "Franta", type: "text" },
-  //   { id: "alegere~1~b~2~C", val: "C", type: "radio" },
-  //   ...
-  // ]
-
-  //cum dau refactor la o variabila
   const trimiteExamen = async () => {
     const raspunsuri = capturareRaspunsuri();
     const resultat = await fetch(`${URL_API}/barem/${an}/${tip}`, {
@@ -152,9 +114,7 @@ const Examen = (props) => {
     if (resultat.status == 200) {
       const date = await resultat.json();
       setPunctaj(date?.punctaj || 0);
-      // alert(`Ai obținut ${date.punctaj} puncte`);
       setFinal(true);
-      // console.log(date);
     }
   };
 

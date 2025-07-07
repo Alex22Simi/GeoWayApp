@@ -11,7 +11,7 @@ const cssHarta = `
   }
 
   .joc:hover {
-    stroke: rgb(236, 217, 38); /* galben */
+    stroke: rgb(236, 153, 38); 
     fill: #00bcd4;             /* turcoaz */
     stroke-width: 5;
   }
@@ -21,13 +21,13 @@ const cssHarta = `
   }
 
   .neales:hover {
-    stroke: rgb(236, 217, 38); /* galben */
+    stroke: rgb(236, 153, 38); 
     fill: #00bcd4;             /* turcoaz */
   }
 
 .apasat {
   fill: #00bcd4;
-  stroke: rgb(236, 217, 38);
+  stroke: rgb(236, 153, 38);
   stroke-width: 5;
 }
 
@@ -35,17 +35,23 @@ const cssHarta = `
 
   .indiciu {
     animation: licarireIndiciu 1s ease-in-out infinite;
-    fill: #00bcd4;
-    stroke: rgb(236, 217, 38);
+    // fill: #00bcd4;
+    // stroke: rgb(236, 217, 38);
+
+    fill:rgb(236, 217, 38);
+    stroke: rgb(236, 153, 38);
     stroke-width: 5;
 
   }
 
   @keyframes licarireIndiciu {
-    0%   { fill: #00bcd4; stroke: rgb(236, 217, 38); !important}
-    50%  { fill:rgb(226, 252, 255); stroke: rgb(236, 217, 38); !important}
-    100% { fill: #00bcd4; stroke: rgb(236, 217, 38); !important}
+    // 0%   { fill: #00bcd4; stroke: rgb(236, 217, 38); !important}
+    // 50%  { fill:rgb(226, 252, 255); stroke: rgb(236, 217, 38); !important}
+    // 100% { fill: #00bcd4; stroke: rgb(236, 217, 38); !important}
 
+    0%   { fill:rgb(236, 217, 38); stroke: rgb(236, 153, 38); !important}
+    50%  { fill:rgb(226, 252, 255); stroke: rgb(236, 153, 38); !important}
+    100% { fill: rgb(236, 217, 38); stroke: rgb(236, 153, 38); !important}
   }
 `;
 export const HartaUnitatiRelief = ({ handleClick }) => {

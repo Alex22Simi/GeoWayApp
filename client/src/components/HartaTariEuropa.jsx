@@ -6,11 +6,11 @@ const cssHarta = `
 }
 
 .baza{
-fill:rgb(246, 248, 185);
+fill:rgb(184, 184, 180);
 }
 
 .desktop:hover {
-  fill: rgb(115, 255, 0);
+   fill: #00bcd4;
 
   cursor: pointer;
   // box-sizing: border-box;
@@ -21,17 +21,29 @@ fill:rgb(246, 248, 185);
   fill:rgba(80,80,80, 0.3);
 }
 .mobil:hover{
-  fill: rgba(115, 255, 0, 0.3) !important;
+  fill: rgba(89, 227, 224, 0.3) !important;
   cursor: pointer;
 }
 
 .apasat {
-  fill: rgb(115, 255, 0);
+  fill: #00bcd4;
 }
   .apasat-transparent {
-  fill: rgba(115, 255, 0, 0.3);
+  fill: rgba(116, 205, 221, 0.8);
 }
+  
+.indiciu {
+    animation: licarireIndiciu 1s ease-in-out infinite;
+    fill: #00bcd4;
+    stroke: rgb(236, 217, 38);
+    stroke-width: 5;
+  }
 
+  @keyframes licarireIndiciu {
+    0%   { fill: #00bcd4; stroke: rgb(236, 217, 38); opacity: 1; }
+    50%  { fill: #4dd0e1; stroke: rgb(236, 217, 38); opacity: 0.4; }
+    100% { fill: #00bcd4; stroke: rgb(236, 217, 38); opacity: 1; }
+  }
 `;
 
 const HartaTariEuropa = ({ handleClick }) => {

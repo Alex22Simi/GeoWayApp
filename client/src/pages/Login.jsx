@@ -19,6 +19,7 @@ const Login = ({ onLogin, afisareNotificare }) => {
   const [emailSent, setEmailSent] = useState(false);
   const [resetCode, setResetCode] = useState("");
   const [codeEntered, setCodeEntered] = useState(false);
+  const [codAcces, setCodAcces] = useState('')
 
   const handleToggle = () => {
     setIsActive(!isActive);
@@ -72,6 +73,7 @@ const Login = ({ onLogin, afisareNotificare }) => {
           parola,
           parolaConfirm,
           elev,
+          codAcces
         }),
       });
       const data = await response.json();
@@ -224,6 +226,12 @@ const Login = ({ onLogin, afisareNotificare }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              {!elev && <input
+                type="text"
+                placeholder="Cod acces"
+                value={codAcces}
+                onChange={(e) => setCodAcces(e.target.value)}
+              />}
               <input
                 type="password"
                 placeholder="Parolă"

@@ -16,7 +16,7 @@ const Lectii = () => {
           jwt: localStorage.getItem("jwt"),
         }
       });
-      if(resultat.ok){
+      if (resultat.ok) {
         const data = await resultat.json()
         localStorage.setItem('lectii', JSON.stringify(data.lectii))
       }
@@ -26,7 +26,7 @@ const Lectii = () => {
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchLectii()
   }, [])
 
@@ -34,7 +34,7 @@ const Lectii = () => {
     <>
       <NavBar />
       <div className="examene-container">
-        <h2 className="title">Capitole lectii</h2>
+        <h2 className="title">Capitole lecții</h2>
         <div className="examene-list">
           {LECTII?.capitole?.map((capitol, indexCapitol) => {
             return (

@@ -1,42 +1,89 @@
 export const HartaCapitaleEuropa = ({ handleClick }) => {
   const cssHarta = `
   
-  .joc {
-  fill: transparent;
+//   .joc {
+//   fill: transparent;
+// }
+
+// .joc:hover {
+//   /* fill: rgb(115, 255, 0); */
+//   /* stroke: rgb(255, 255, 255); */
+//   /* stroke-width: 3; */
+//   /* cursor: pointer; */
+//   /* box-sizing: border-box; */
+//   /* stroke-linecap: round; */
+// }
+
+// .desktop {
+//   fill: rgb(115, 28, 28);
+// }
+
+// .joc{
+// stroke-width: 50;
+// stroke:rgb(20,200,200);
+// fill:rgb(20,200,200);
+// }
+
+// .joc:hover{
+// stroke:rgb(45, 186, 56);
+// fill:rgb(45, 186, 56);
+// }
+
+// .apasat{
+// stroke:rgb(45, 186, 56);
+// fill:rgb(45, 186, 56);
+// }
+
+.baza{
+  fill: rgba(232, 51, 51, 0.85);
 }
 
-.joc:hover {
-  /* fill: rgb(115, 255, 0); */
-  /* stroke: rgb(255, 255, 255); */
-  /* stroke-width: 3; */
-  /* cursor: pointer; */
-  /* box-sizing: border-box; */
-  /* stroke-linecap: round; */
+
+.joc {
+  fill: none;
+  stroke: rgb(40, 57, 181);
+  stroke-width: 35;
+  stroke-linecap: round;
+  z-index: 0;
+}
+ .apasat {
+  //fill: rgb(236, 217, 38) !important;
+  stroke: rgb(236, 217, 38) !important;
+  stroke-width: 30 !important;
+}
+
+.desktop:hover {
+  stroke: rgb(236, 217, 38);
+  stroke-width: 70;
 }
 
 .desktop {
-  fill: rgb(115, 28, 28);
+  cursor: pointer;
+  // stroke: #00bcd4;
+   stroke:rgb(52, 235, 207);
+  stroke-width: 25;
+  z-index: 50;
 }
 
-.joc{
-stroke-width: 50;
-stroke:rgb(20,200,200);
-fill:rgb(20,200,200);
-}
+.indiciu {
+    animation: licarireIndiciu 1s ease-in-out infinite;
+    fill:none;
+    stroke: rgb(236, 217, 38);
+    stroke-width: 70;
+  }
 
-.joc:hover{
-stroke:rgb(45, 186, 56);
-fill:rgb(45, 186, 56);
-}
+  @keyframes licarireIndiciu {
+    0%   { fill: none; stroke: rgb(236, 217, 38); opacity: 1; }
+    50%  { fill: none; stroke: rgb(236, 217, 38); opacity: 0.4; }
+    100% { fill: none; stroke: rgb(236, 217, 38); opacity: 1; }
+  }
 
-.apasat{
-stroke:rgb(45, 186, 56);
-fill:rgb(45, 186, 56);
-}
+  .plus1{
+    fill: rgb(20, 20, 230);
+  }
 
-.baza{
-  fill: rgb(150,150,150)
-}
+
+
 
   `;
   return (
